@@ -34,7 +34,7 @@
 
     const session = getSession();
     if (!session || session.role !== 'admin') {
-        window.location.replace('index.html');
+        window.location.replace('MainMenu.html');
         return;
     }
 
@@ -355,7 +355,7 @@
     const elBackToMenu = document.getElementById('backToMenuBtn');
     if (elBackToMenu) {
         elBackToMenu.addEventListener('click', () => {
-            window.location.href = 'index.html';
+            window.location.href = 'MainMenu.html';
         });
     }
 
@@ -372,7 +372,7 @@
                         } else {
                             localStorage.removeItem('convenire_session');
                         }
-                        window.location.href = 'index.html';
+                        window.location.href = 'MainMenu.html';
                     },
                     null,
                     '⚠️',
@@ -385,7 +385,7 @@
                 } else {
                     localStorage.removeItem('convenire_session');
                 }
-                window.location.href = 'index.html';
+                window.location.href = 'MainMenu.html';
             }
         });
     }

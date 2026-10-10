@@ -3,7 +3,7 @@
 (function() {
     // Authentication Session Guard - Require Login
     if (window.AuthEngine && !window.AuthEngine.getSession()) {
-        window.location.href = 'index.html';
+        window.location.href = 'MainMenu.html';
         return;
     }
 
@@ -1373,7 +1373,7 @@
                     </div>
 
                     <div class="indicator-actions-wrap" style="margin-top: 10px; display: flex; gap: 12px; width: 100%; justify-content: center;">
-                        <a href="index.html" class="indicator-btn btn-menu-return">
+                        <a href="MainMenu.html" class="indicator-btn btn-menu-return">
                             <span class="btn-icon">🏆</span>
                             <span>RETURN TO GAME MENU</span>
                         </a>
@@ -1480,7 +1480,7 @@
             if (e.key === 'Escape') {
                 e.preventDefault();
                 playClickSound();
-                window.location.href = 'index.html';
+                window.location.href = 'MainMenu.html';
             } else if (e.key === 's' || e.key === 'S') {
                 e.preventDefault();
                 playClickSound();

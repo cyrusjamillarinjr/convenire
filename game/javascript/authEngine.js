@@ -1101,11 +1101,11 @@ window.AuthEngine = (function () {
                                     '🔒',
                                     'OK',
                                     () => {
-                                        window.location.href = 'index.html';
+                                        window.location.href = 'MainMenu.html';
                                     }
                                 );
                                 setTimeout(() => {
-                                    window.location.href = 'index.html';
+                                    window.location.href = 'MainMenu.html';
                                 }, 1500);
                             },
                             null,
@@ -1114,7 +1114,7 @@ window.AuthEngine = (function () {
                             'CANCEL'
                         );
                     } else {
-                        window.location.href = 'index.html';
+                        window.location.href = 'MainMenu.html';
                     }
                 };
             }

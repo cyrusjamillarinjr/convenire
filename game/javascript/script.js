@@ -687,7 +687,7 @@
     }
 
     function exitGame() {
-        window.location.href = '../website/index.html';
+        window.location.href = '../website/website.html';
     }
 
     function playPrologueStory(onComplete) {

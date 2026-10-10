@@ -1,7 +1,7 @@
 (function() {
     // Authentication Session Guard - Require Login
     if (window.AuthEngine && !window.AuthEngine.getSession()) {
-        window.location.href = 'index.html';
+        window.location.href = 'MainMenu.html';
         return;
     }
 
@@ -1008,7 +1008,7 @@
     // ===================================================
     function backToMenu() {
         soundFx.blip();
-        window.location.href = 'index.html';
+        window.location.href = 'MainMenu.html';
     }
 
     function nextStage() {
