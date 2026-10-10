@@ -1,0 +1,940 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVENIRE · Sci-Fi 2D Puzzle Game</title>
+    <!-- Sci-Fi Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+    <!-- Aura Gradient: "Phantom Arc" Background Container -->
+    <div class="aura-bg">
+        <div class="aura-layer-1" aria-hidden="true"></div>
+        <div class="aura-layer-2" aria-hidden="true"></div>
+        <div class="aura-layer-3" aria-hidden="true"></div>
+
+        <!-- Game Content Wrapper (Sits above absolute blur layers) -->
+        <div style="position: relative; z-index: 1;">
+            <div class="premium-background-container">
+                <div class="premium-bg-image">
+                    <img src="images/cyber_hardware_bg.png" class="bg-fallback-img" alt="Background">
+                </div>
+                <video id="menuVideo" class="background-video-ambient" autoplay loop muted playsinline
+                    poster="images/cyber_hardware_bg.png">
+                    <source src="video/background-video.mp4" type="video/mp4">
+                    <source src="video/video2.mp4" type="video/mp4">
+                </video>
+                <div class="video-overlay"></div>
+                <div class="cyber-grid-overlay"></div>
+
+                <!-- Motherboard Circuit Traces & Bus Pathways -->
+                <svg class="motherboard-traces-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+                    <!-- CPU Bus Pathways -->
+                    <path class="trace-path path-animated-1" d="M 400 180 L 750 180 L 800 230 L 1300 230" fill="none"
+                        stroke="rgba(0,245,255,0.3)" stroke-width="2" stroke-dasharray="10 8" />
+                    <path class="trace-path path-animated-2" d="M 420 860 L 820 860 L 870 810 L 1500 810" fill="none"
+                        stroke="rgba(0,245,255,0.25)" stroke-width="1.5" stroke-dasharray="8 6" />
+                    <path class="trace-path" d="M 1250 120 L 1250 480 L 1600 480" fill="none"
+                        stroke="rgba(0,245,255,0.2)" stroke-width="1.5" />
+
+                    <!-- Motherboard Socket & Chip Pin Nodes -->
+                    <g class="ic-chip-pins" opacity="0.35">
+                        <rect x="1400" y="280" width="130" height="130" fill="none" stroke="#00f5ff"
+                            stroke-width="1.5" />
+                        <circle cx="1465" cy="345" r="18" fill="none" stroke="#00f5ff" stroke-width="1.5" />
+                        <line x1="1370" y1="300" x2="1400" y2="300" stroke="#00f5ff" stroke-width="2" />
+                        <line x1="1370" y1="335" x2="1400" y2="335" stroke="#00f5ff" stroke-width="2" />
+                        <line x1="1370" y1="370" x2="1400" y2="370" stroke="#00f5ff" stroke-width="2" />
+                        <line x1="1530" y1="300" x2="1560" y2="300" stroke="#00f5ff" stroke-width="2" />
+                        <line x1="1530" y1="335" x2="1560" y2="335" stroke="#00f5ff" stroke-width="2" />
+                        <line x1="1530" y1="370" x2="1560" y2="370" stroke="#00f5ff" stroke-width="2" />
+                    </g>
+                </svg>
+
+                <!-- Motherboard Hardware Telemetry Background Readouts -->
+                <div class="motherboard-telemetry">
+                    <div class="telemetry-item item-top-right">
+                        <span class="telemetry-label">CHIPSET // BUS LINK</span>
+                        <span class="telemetry-val">Z790 CONVENIRE-CORE // READY</span>
+                    </div>
+                    <div class="telemetry-item item-bottom-mid">
+                        <span class="telemetry-label">PUZZLE MATRIX</span>
+                        <span class="telemetry-val">SOCKET LGA-1700 // HARDWARE OK</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SVG Futuristic Sci-Fi HUD Wireframe Frame -->
+            <svg class="hud-frame-svg" viewBox="0 0 1920 1080" preserveAspectRatio="none">
+                <!-- Top right HUD bar accent -->
+                <path d="M 380 30 L 1400 30 L 1420 50 L 1880 50" fill="none" stroke="#00f5ff" stroke-width="1.5"
+                    opacity="0.4" stroke-dasharray="8 4" />
+                <circle cx="1400" cy="30" r="3" fill="#00f5ff" />
+                <circle cx="1420" cy="50" r="3" fill="#00f5ff" />
+
+                <!-- Sidebar Outer Glowing HUD Border Line -->
+                <path
+                    d="M 30 30 L 330 30 L 360 60 L 360 145 L 340 160 L 340 230 L 360 245 L 360 980 L 330 1010 L 160 1010 L 140 1030 L 30 1030 Z"
+                    fill="none" stroke="#00f5ff" stroke-width="2" opacity="0.75"
+                    filter="drop-shadow(0 0 8px #00f5ff)" />
+
+                <!-- Bottom Footer Wireframe Line -->
+                <path
+                    d="M 360 980 L 800 980 L 820 1000 L 1100 1000 L 1120 980 L 1500 980 L 1530 950 L 1880 950 L 1890 960 L 1890 1030"
+                    fill="none" stroke="#00f5ff" stroke-width="1.5" opacity="0.5" />
+            </svg>
+
+            <div id="mapReveal" class="map-reveal hidden">
+                <div class="map-reveal-text">Initializing Motherboard Parts...</div>
+            </div>
+
+            <audio id="backgroundMusic" loop>
+                <source src="audio/kaya ni ah.mp3" type="audio/mpeg">
+            </audio>
+
+            <audio id="gameMusic" loop>
+                <source src="audio/gameplay-music.mp3" type="audio/mpeg">
+            </audio>
+
+            <!-- Top Right Audio Player Widget -->
+            <div class="audio-widget" id="audioWidget">
+                <div class="audio-info">
+                    <div class="audio-icon-badge">
+                        <span class="audio-icon">🎵</span>
+                    </div>
+                    <div class="audio-meta">
+                        <span class="audio-status">NOW PLAYING</span>
+                        <span class="audio-title" id="audioTrackTitle">Code of Convergence</span>
+                    </div>
+                    <div class="equalizer-bars" id="equalizerBars">
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                        <div class="eq-bar"></div>
+                    </div>
+                </div>
+                <div class="audio-controls">
+                    <button id="widgetMuteBtn" class="widget-mute-btn" title="Toggle Sound">🔊</button>
+                    <input type="range" id="widgetVolumeSlider" min="0" max="100" value="50"
+                        class="widget-volume-slider">
+                </div>
+            </div>
+
+            <!-- Main Game Container / Screen -->
+            <div class="game-container" id="gameContainer">
+
+                <!-- Main Menu View -->
+                <div id="mainMenu" class="main-menu-wrapper">
+
+                    <!-- Left Cyberpunk Navigation Sidebar -->
+                    <div class="cyber-sidebar">
+                        <div class="sidebar-border-line"></div>
+
+                        <!-- Logo Header -->
+                        <div class="sidebar-logo">
+                            <div class="logo-icon-box">
+                                <img src="images/convenire_logo.png" class="logo-img" alt="CONVENIRE Puzzle Logo">
+                            </div>
+                            <div class="logo-text-box">
+                                <span class="logo-title">CONVENIRE</span>
+                            </div>
+                        </div>
+
+                        <!-- Navigation Buttons -->
+                        <div class="menu-buttons">
+                            <button id="startBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <polygon points="5,3 19,12 5,21" fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">START GAME</span>
+                                    <span class="btn-sub">Begin your journey</span>
+                                </div>
+                            </button>
+
+                            <button id="storyBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">STORY BRIEFING</span>
+                                    <span class="btn-sub">Discover the world</span>
+                                </div>
+                            </button>
+
+                            <button id="stageSelectBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M4 4h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 10h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4zM4 16h4v4H4zm6 0h4v4h-4zm6 0h4v4h-4z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">SELECT STAGES</span>
+                                    <span class="btn-sub">Choose your challenge</span>
+                                </div>
+                            </button>
+
+                            <button id="aboutBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">HOW TO PLAY</span>
+                                    <span class="btn-sub">Learn the mechanics</span>
+                                </div>
+                            </button>
+
+                            <button id="scoringBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94.63 1.5 1.98 2.63 3.61 2.96V19H7v2h10v-2h-4v-3.1c1.63-.33 2.98-1.46 3.61-2.96C19.08 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">SCOREBOARD</span>
+                                    <span class="btn-sub">Stage results & scores</span>
+                                </div>
+                            </button>
+
+                            <button id="settingsBtn" class="menu-btn">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path
+                                            d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"
+                                            fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">SETTINGS</span>
+                                    <span class="btn-sub">Adjust preferences</span>
+                                </div>
+                            </button>
+
+                            <a href="../website/index.html" class="menu-btn btn-home-nav" id="backToWebsiteBtn"
+                                title="Return to Website Home">
+                                <div class="btn-icon-wrapper">
+                                    <svg class="btn-svg-icon" viewBox="0 0 24 24">
+                                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" fill="currentColor" />
+                                    </svg>
+                                </div>
+                                <div class="btn-text">
+                                    <span class="btn-title">BACK TO WEBSITE</span>
+                                    <span class="btn-sub">Return to main page</span>
+                                </div>
+                            </a>
+                        </div>
+
+                        <!-- Sidebar Footer -->
+                        <div class="sidebar-footer">
+                            <div class="sidebar-tag">2D PUZZLE GAME</div>
+                            <div class="sidebar-motto">ASSEMBLE · LEARN · MASTER</div>
+                        </div>
+                    </div>
+
+                    <!-- Main Hero Showcase Content -->
+                    <div class="hero-showcase">
+                        <div class="hero-header">
+                            <h1 class="main-title">CONVENIRE</h1>
+                            <div class="title-divider">
+                                <span class="divider-line"></span>
+                                <span class="subtitle-text">ASSEMBLE · LEARN · MASTER</span>
+                                <span class="divider-line"></span>
+                            </div>
+                            <div class="tagline-container">
+                                <p>Assemble the pieces. Solve the puzzles.</p>
+                                <p>Converge the code. Master the system.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom Right Quote Box -->
+                    <div class="quote-box">
+                        <span class="quote-mark">“</span>
+                        <p class="quote-text">
+                            In a world of broken systems,<br>
+                            you are the <span class="highlight-cyan">missing piece</span>.
+                        </p>
+                        <span class="quote-mark-end">”</span>
+                    </div>
+
+                    <!-- Cyber Footer -->
+                    <div class="cyber-footer">
+                        <div class="social-links">
+                            <a href="#" class="social-icon" title="Website"><svg width="18" height="18"
+                                    viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z" />
+                                </svg></a>
+                            <a href="#" class="social-icon" title="Discord"><svg width="18" height="18"
+                                    viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.041.001-.09-.041-.106a13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.061 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.028zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
+                                </svg></a>
+                            <a href="#" class="social-icon" title="YouTube"><svg width="18" height="18"
+                                    viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                                </svg></a>
+                            <a href="#" class="social-icon" title="GitHub"><svg width="18" height="18"
+                                    viewBox="0 0 24 24" fill="currentColor">
+                                    <path
+                                        d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z" />
+                                </svg></a>
+                        </div>
+                        <div class="version-tag">v1.0.0</div>
+                    </div>
+
+                </div>
+
+                <!-- Modals and Overlays -->
+                <div id="settingsPanel" class="settings-panel hidden">
+                    <div class="modal-cyber-frame">
+                        <h2>⚙️ SETTINGS</h2>
+                        <div class="music-option" id="musicVolumeArea">
+                            <span>🎵 BACKGROUND MUSIC</span>
+                            <div class="volume-control">
+                                <div class="volume-slider-container">
+                                    <input type="range" id="volumeSlider" min="0" max="100" value="50"
+                                        class="volume-slider">
+                                    <span id="volumeValue" class="volume-value">50%</span>
+                                </div>
+                                <div class="volume-buttons">
+                                    <button id="muteBtn" class="volume-btn">🔊 Mute</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="back-btn" id="backFromSettings">← BACK TO MENU</button>
+                    </div>
+                </div>
+
+                <div id="stageMenu" class="stage-panel hidden">
+                    <div class="modal-cyber-frame select-stage-cyber-frame">
+                        <!-- Cyber Reticle Corners -->
+                        <div class="hud-corner top-left"></div>
+                        <div class="hud-corner top-right"></div>
+                        <div class="hud-corner bottom-left"></div>
+                        <div class="hud-corner bottom-right"></div>
+
+                        <div class="stage-menu-header">
+                            <div class="stage-badge-tag">
+                                <span class="pulse-dot"></span>
+                                <span>CSS NC II • HARDWARE & NETWORKING SIMULATION DECK</span>
+                            </div>
+                            <h2 class="stage-menu-title">SELECT TRAINING STAGE</h2>
+                            <p class="stage-menu-sub">Choose an assessment module to test component assembly, rear I/O
+                                port recognition, or Cat6 network cable crimping.</p>
+                        </div>
+
+                        <div class="stage-grid" id="stageGrid"></div>
+
+                        <div class="stage-menu-footer">
+                            <button id="backToMenuFromStage" class="cyber-back-btn">
+                                <span class="back-arrow">⬅</span>
+                                <span class="back-text">RETURN TO MAIN MENU</span>
+                                <span class="back-key">[ESC]</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- SIMPLE GAME SCOREBOARD MODAL -->
+                <div id="scoringPanel" class="scoring-panel hidden">
+                    <div class="modal-cyber-frame simple-score-modal-frame">
+                        <h2>🏆 HIGH SCORES & RESULTS</h2>
+
+                        <!-- Player Score Card -->
+                        <div class="simple-player-card">
+                            <div class="simple-player-top">
+                                <div class="simple-player-info">
+                                    <span class="player-icon" id="playerCardAvatar">👨‍💻</span>
+                                    <div>
+                                        <h3 id="playerCardName">GUEST TECHNICIAN</h3>
+                                        <span class="player-sub-text" id="playerCardMeta">Student ID: Guest</span>
+                                    </div>
+                                </div>
+                                <div class="simple-player-rank" id="playerRankBadgeBox">
+                                    <span class="rank-grade" id="playerRankGrade">GRADE C</span>
+                                    <span class="rank-title" id="playerRankTitle">Junior Apprentice</span>
+                                </div>
+                            </div>
+
+                            <!-- 3 Stage Score Rows -->
+                            <div class="simple-score-rows">
+                                <div class="simple-score-row">
+                                    <div class="row-left">
+                                        <span class="stage-tag">STAGE 1</span>
+                                        <span class="stage-name">Motherboard Assembly</span>
+                                    </div>
+                                    <div class="row-right">
+                                        <span class="stage-score" id="playerStg1Score">0 / 105 PTS</span>
+                                        <span class="stage-status status-incomplete" id="playerStg1Status">🔒
+                                            Incomplete</span>
+                                    </div>
+                                </div>
+
+                                <div class="simple-score-row">
+                                    <div class="row-left">
+                                        <span class="stage-tag">STAGE 2</span>
+                                        <span class="stage-name">Back Panel & Ports</span>
+                                    </div>
+                                    <div class="row-right">
+                                        <span class="stage-score" id="playerStg2Score">0 / 250 PTS</span>
+                                        <span class="stage-status status-incomplete" id="playerStg2Status">🔒
+                                            Incomplete</span>
+                                    </div>
+                                </div>
+
+                                <div class="simple-score-row">
+                                    <div class="row-left">
+                                        <span class="stage-tag">STAGE 3</span>
+                                        <span class="stage-name">RJ-45 Cable Crimping</span>
+                                    </div>
+                                    <div class="row-right">
+                                        <span class="stage-score" id="playerStg3Score">0 / 100 PTS</span>
+                                        <span class="stage-status status-incomplete" id="playerStg3Status">🔒
+                                            Incomplete</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Total Score Display -->
+                            <div class="simple-total-box">
+                                <div class="total-label-box">
+                                    <span class="total-label">TOTAL SCORE</span>
+                                    <span class="total-max">Max Possible: 300 PTS</span>
+                                </div>
+                                <div class="total-score-val" id="playerGrandTotal">0 PTS</div>
+                            </div>
+                        </div>
+
+                        <!-- Simple Stage Points Summary -->
+                        <div class="simple-scoring-rules">
+                            <div class="rule-chip"><span>🖥️ Stage 1:</span> <strong>100 pts</strong></div>
+                            <div class="rule-chip"><span>🔌 Stage 2:</span> <strong>100 pts</strong></div>
+                            <div class="rule-chip"><span>✂️ Stage 3:</span> <strong>100 pts</strong></div>
+                            <div class="rule-chip highlight-chip"><span>🏆 Total:</span> <strong>300 pts</strong></div>
+                        </div>
+
+                        <!-- Top High Scores Leaderboard Table -->
+                        <div class="simple-leaderboard-box">
+                            <div class="leaderboard-header-row">
+                                <span class="leaderboard-title">🥇 CLASSROOM HIGH SCORES</span>
+                                <span class="leaderboard-subtitle">Live Student Leaderboard</span>
+                            </div>
+                            <div class="simple-leaderboard-table-wrap">
+                                <table class="simple-lb-table">
+                                    <thead>
+                                        <tr>
+                                            <th>RANK</th>
+                                            <th>STUDENT</th>
+                                            <th>SEC</th>
+                                            <th>STG 1</th>
+                                            <th>STG 2</th>
+                                            <th>STG 3</th>
+                                            <th>TOTAL</th>
+                                            <th>GRADE</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="simpleLeaderboardList">
+                                        <!-- Populated dynamically by script.js -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="back-row">
+                            <button class="back-btn" id="backToMenuFromScoring">⬅ BACK TO MENU</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INTERACTIVE ACADEMY TUTORIAL & HOW TO PLAY MODAL -->
+                <div id="instructionsPanel" class="instructions-panel hidden">
+                    <div class="modal-cyber-frame tutorial-modal-frame">
+                        <div class="tut-modal-header">
+                            <div class="tut-header-tag">CONVENIRE SYSTEM SERVICING ACADEMY · OPERATION MANUAL</div>
+                            <h2 class="tut-modal-title">⚡ HOW TO PLAY & HARDWARE TUTORIAL</h2>
+                        </div>
+
+                        <!-- Navigation Tabs -->
+                        <div class="tut-tabs-navbar">
+                            <button class="tut-tab-btn active" data-tab="tabStage1">🖥️ STAGE 1: MOTHERBOARD</button>
+                            <button class="tut-tab-btn" data-tab="tabStage2">🔌 STAGE 2: REAR I/O PORTS</button>
+                            <button class="tut-tab-btn" data-tab="tabStage3">✂️ STAGE 3: CABLE CRIMPING</button>
+                            <button class="tut-tab-btn" data-tab="tabControls">🎮 CONTROLS & RULES</button>
+                            <button class="tut-tab-btn" data-tab="tabScoring">🏆 SCORING SYSTEM</button>
+                        </div>
+
+                        <!-- TAB 1: STAGE 1 (MOTHERBOARD ASSEMBLY) -->
+                        <div class="tut-tab-pane active" id="tabStage1">
+                            <div class="tut-pane-grid">
+                                <div class="tut-guide-content">
+                                    <div class="tut-section-title">STAGE 1: MOTHERBOARD HARDWARE SPEEDRUN</div>
+                                    <p class="tut-desc-text">Drag physical computer hardware from the inventory dock and
+                                        mount them into exact corresponding motherboard sockets. The faster you drop
+                                        correct
+                                        components before time runs out, the higher your speed bonus score!</p>
+
+                                    <div class="tut-key-specs-grid">
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🧠</div>
+                                            <div class="spec-card-info">
+                                                <strong>Intel Core i9 Desktop CPU</strong>
+                                                <span>Socket: LGA-1700 Central Matrix. Align triangle corner.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">⚡</div>
+                                            <div class="spec-card-info">
+                                                <strong>DDR5 High-Speed RAM</strong>
+                                                <span>Slots: Dual Channel DIMM slots next to the CPU socket.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🎮</div>
+                                            <div class="spec-card-info">
+                                                <strong>GeForce RTX Dedicated GPU</strong>
+                                                <span>Slot: Primary PCIe x16 Reinforced Steel Slot.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🔌</div>
+                                            <div class="spec-card-info">
+                                                <strong>Power & SATA Links</strong>
+                                                <span>24-Pin ATX Power, 4-Pin CPU 12V EPS, and SATA 6Gbps Data
+                                                    Cable.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tut-live-demo-viewport">
+                                    <div class="demo-viewport-box" id="stage1DemoBox">
+                                        <div class="demo-viewport-badge">LIVE HAND SIMULATION</div>
+                                        <div class="demo-motherboard-sim">
+                                            <div class="demo-dock-col">
+                                                <div class="demo-hardware-item" id="simCpuItem">
+                                                    <img src="images/cpu.png" alt="CPU">
+                                                    <span>Core i9</span>
+                                                </div>
+                                                <div class="demo-hardware-item" id="simRamItem">
+                                                    <img src="images/RAM.png" alt="RAM">
+                                                    <span>DDR5 RAM</span>
+                                                </div>
+                                                <div class="demo-hardware-item" id="simGpuItem">
+                                                    <img src="images/GPU.png" alt="GPU">
+                                                    <span>RTX GPU</span>
+                                                </div>
+                                            </div>
+                                            <div class="demo-board-target-area">
+                                                <div class="demo-drop-socket" id="simCpuSocket"
+                                                    data-name="CPU SOCKET (LGA-1700)">
+                                                    <span>CPU SOCKET</span>
+                                                </div>
+                                                <div class="demo-drop-socket" id="simRamSocket"
+                                                    data-name="DDR5 DIMM_A2">
+                                                    <span>DIMM_A2</span>
+                                                </div>
+                                                <div class="demo-drop-socket" id="simGpuSocket"
+                                                    data-name="PCIe 5.0 x16">
+                                                    <span>PCIe x16</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn-launch-demo" id="btnRunStage1Demo">
+                                            <span>✋</span> WATCH ANIMATED HAND DEMO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 2: STAGE 2 (BACK PANEL CHALLENGE) -->
+                        <div class="tut-tab-pane" id="tabStage2">
+                            <div class="tut-pane-grid">
+                                <div class="tut-guide-content">
+                                    <div class="tut-section-title">STAGE 2: REAR I/O BACK PANEL SPEEDRUN</div>
+                                    <p class="tut-desc-text">Identify and connect 10 peripheral cables to the rear
+                                        motherboard shield. The faster you drop correct components before time runs out,
+                                        the higher your speed bonus score!</p>
+
+                                    <div class="tut-key-specs-grid">
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🖱️</div>
+                                            <div class="spec-card-info">
+                                                <strong>PS/2 Mouse & Keyboard</strong>
+                                                <span>Color-coded mini-DIN: Purple = Keyboard, Green = Mouse.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">📺</div>
+                                            <div class="spec-card-info">
+                                                <strong>HDMI, DVI & VGA Video</strong>
+                                                <span>Digital HDMI/DVI and Analog DE-15 15-pin Blue VGA port.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🌐</div>
+                                            <div class="spec-card-info">
+                                                <strong>Ethernet & USB 2.0/3.0</strong>
+                                                <span>RJ-45 8P8C Network Jack & Universal Serial Bus ports.</span>
+                                            </div>
+                                        </div>
+                                        <div class="tut-spec-card">
+                                            <div class="spec-card-icon">🎧</div>
+                                            <div class="spec-card-info">
+                                                <strong>3.5mm HD Audio Jacks</strong>
+                                                <span>Lime Green = Stereo Line Out/Speakers, Pink = Microphone
+                                                    In.</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="tut-live-demo-viewport">
+                                    <div class="demo-viewport-box" id="stage2DemoBox">
+                                        <div class="demo-viewport-badge">LIVE HAND SIMULATION</div>
+                                        <div class="demo-motherboard-sim">
+                                            <div class="demo-dock-col">
+                                                <div class="demo-hardware-item" id="simUsbItem">
+                                                    <img src="images/usb.png" alt="USB">
+                                                    <span>USB 3.0</span>
+                                                </div>
+                                                <div class="demo-hardware-item" id="simHdmiItem">
+                                                    <img src="images/hdmi.png" alt="HDMI">
+                                                    <span>HDMI</span>
+                                                </div>
+                                                <div class="demo-hardware-item" id="simEthItem">
+                                                    <img src="images/ethernet.png" alt="LAN">
+                                                    <span>Ethernet</span>
+                                                </div>
+                                            </div>
+                                            <div class="demo-board-target-area">
+                                                <div class="demo-drop-socket" id="simUsbSocket"
+                                                    data-name="USB 3.0 Port">
+                                                    <span>USB PORT</span>
+                                                </div>
+                                                <div class="demo-drop-socket" id="simHdmiSocket"
+                                                    data-name="HDMI 2.1 Output">
+                                                    <span>HDMI OUT</span>
+                                                </div>
+                                                <div class="demo-drop-socket" id="simEthSocket"
+                                                    data-name="RJ-45 Gigabit LAN">
+                                                    <span>LAN RJ-45</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button class="btn-launch-demo" id="btnRunStage2Demo">
+                                            <span>✋</span> WATCH BACK PANEL DEMO
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 3: STAGE 3 (RJ-45 CABLE CRIMPING) -->
+                        <div class="tut-tab-pane" id="tabStage3">
+                            <div class="tut-pane-full">
+                                <div class="tut-section-title">STAGE 3: 5-STEP RJ-45 MODULAR CABLE CRIMPING</div>
+                                <p class="tut-desc-text">Simulate authentic NCII standard network cable fabrication
+                                    following the official T568B telecommunications standard.</p>
+
+                                <div class="crimping-steps-carousel">
+                                    <div class="crimp-step-card">
+                                        <div class="crimp-step-num">STEP 01</div>
+                                        <h4>STRIP JACKET</h4>
+                                        <p>Rotate cable stripper around outer PVC sheath. Carefully slide off jacket
+                                            without nicking the 4 twisted copper pairs.</p>
+                                    </div>
+                                    <div class="crimp-step-card">
+                                        <div class="crimp-step-num">STEP 02</div>
+                                        <h4>UNPAIR & ALIGN</h4>
+                                        <p>Untwist wire pairs and arrange left-to-right according to
+                                            <strong>T568B</strong>:
+                                        </p>
+                                        <div class="t568b-wire-list">
+                                            <span class="wire-tag tag-wo">1. W-Org</span>
+                                            <span class="wire-tag tag-o">2. Orange</span>
+                                            <span class="wire-tag tag-wg">3. W-Grn</span>
+                                            <span class="wire-tag tag-b">4. Blue</span>
+                                            <span class="wire-tag tag-wb">5. W-Blu</span>
+                                            <span class="wire-tag tag-g">6. Green</span>
+                                            <span class="wire-tag tag-wbr">7. W-Brn</span>
+                                            <span class="wire-tag tag-br">8. Brown</span>
+                                        </div>
+                                    </div>
+                                    <div class="crimp-step-card">
+                                        <div class="crimp-step-num">STEP 03</div>
+                                        <h4>FLUSH TRIM</h4>
+                                        <p>Flatten wires into a parallel ribbon and cut flush at a 90° angle, leaving
+                                            exactly 1/2 inch (12-14mm) exposed length.</p>
+                                    </div>
+                                    <div class="crimp-step-card">
+                                        <div class="crimp-step-num">STEP 04</div>
+                                        <h4>PLUG INSERTION</h4>
+                                        <p>Slide aligned wires into transparent RJ-45 8P8C modular plug with golden pins
+                                            facing up until copper reaches the tip.</p>
+                                    </div>
+                                    <div class="crimp-step-card">
+                                        <div class="crimp-step-num">STEP 05</div>
+                                        <h4>RATCHET CRIMP</h4>
+                                        <p>Insert plug into 8P die and squeeze ratchet handles firmly until tool
+                                            completes full cycle to drive gold pins into copper conductors.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 4: CONTROLS & SHORTCUTS -->
+                        <div class="tut-tab-pane" id="tabControls">
+                            <div class="tut-pane-full">
+                                <div class="tut-section-title">COMMAND HOTKEYS & GAMEPLAY RULES</div>
+                                <div class="shortcuts-grid">
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">SPACEBAR</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Master Power Trigger</strong>
+                                            <span>Initiates motherboard boot sequence and validates all placed
+                                                components.</span>
+                                        </div>
+                                    </div>
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">R</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Reset Stage</strong>
+                                            <span>Clears component placements and returns hardware to inventory.</span>
+                                        </div>
+                                    </div>
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">S</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Story Briefing</strong>
+                                            <span>Opens lore briefing dialogue for the current hardware mission.</span>
+                                        </div>
+                                    </div>
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">ESC</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Return to Menu</strong>
+                                            <span>Exits stage and returns to the Convenire main hub.</span>
+                                        </div>
+                                    </div>
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">MOUSE DRAG</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Hardware Placement</strong>
+                                            <span>Click and drag hardware components from dock into matching motherboard
+                                                slots.</span>
+                                        </div>
+                                    </div>
+                                    <div class="shortcut-card">
+                                        <span class="shortcut-key">ENTER</span>
+                                        <div class="shortcut-desc">
+                                            <strong>Next Stage</strong>
+                                            <span>Proceed to the next stage upon achieving victory.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- TAB 5: SCORING MATRIX & GRADING -->
+                        <div class="tut-tab-pane" id="tabScoring">
+                            <div class="tut-pane-full">
+                                <div class="tut-section-title">🏆 SCORING FORMULAS & MAXIMUM POINT MATRIX</div>
+                                <p class="tut-desc-text">Each stage awards points based on precision and mastery.
+                                    The total maximum possible score is <strong>300 Points</strong>.</p>
+
+                                <div class="tut-key-specs-grid" style="margin-top: 15px;">
+                                    <div class="tut-spec-card">
+                                        <div class="spec-card-icon">🖥️</div>
+                                        <div class="spec-card-info">
+                                            <strong>Stage 1: Motherboard (100 pts max)</strong>
+                                            <span>+5 pts per socket + up to +5 Speed Bonus (70 pts max) + 10 pts POST +
+                                                up to +20 Time Bonus!</span>
+                                        </div>
+                                    </div>
+                                    <div class="tut-spec-card">
+                                        <div class="spec-card-icon">🔌</div>
+                                        <div class="spec-card-info">
+                                            <strong>Stage 2: Rear I/O (100 pts max)</strong>
+                                            <span>+4 pts per port + up to +3 Speed Bonus (70 pts max) + 10 pts POST + up
+                                                to +20 Time Bonus!</span>
+                                        </div>
+                                    </div>
+                                    <div class="tut-spec-card">
+                                        <div class="spec-card-icon">✂️</div>
+                                        <div class="spec-card-info">
+                                            <strong>Stage 3: RJ45 Crimping (100 pts max)</strong>
+                                            <span>+3 pts per pin (48 pts) + 12 pts Continuity Pass + 8 pts per Quiz Q
+                                                (40 pts max).</span>
+                                        </div>
+                                    </div>
+                                    <div class="tut-spec-card" style="border-color: var(--cyan-primary);">
+                                        <div class="spec-card-icon">🌟</div>
+                                        <div class="spec-card-info">
+                                            <strong>Grand Total: 300 Points (100%)</strong>
+                                            <span>Score 270+ pts to earn the prestigious Master Systems Architect
+                                                title!</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Modal Footer -->
+                        <div class="tut-modal-footer">
+                            <button class="tut-back-btn" id="backToMenuFromIns">⬅ BACK TO MENU</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- User Session Top Badge -->
+            <div id="userSessionBadge" class="user-session-badge user-offline">
+                <span class="status-pulse-dot offline"></span>
+                <span id="userBadgeText" class="badge-text">🔴 GUEST / OFFLINE</span>
+                <button id="userAuthBtn" class="user-auth-btn">SIGN IN</button>
+            </div>
+
+            <!-- AUTHENTICATION MODAL (STUDENT / ADMIN LOGIN & REGISTRATION) -->
+            <div id="authModal" class="auth-overlay hidden">
+                <div class="auth-modal-box">
+                    <button class="auth-close-btn" id="closeAuthModal">×</button>
+
+                    <div class="auth-header-tag">NCII · SYSTEMS SERVICING TRAINER</div>
+                    <h1 class="auth-modal-title" id="authTitle">CONVENIRE</h1>
+                    <p class="auth-subtitle" id="authSubtitle">Assemble. Connect. Terminate. Sign In to continue.</p>
+
+                    <!-- UNIFIED LOGIN FORM (STUDENT & ADMIN AUTO-ROLE IDENTIFICATION) -->
+                    <form id="unifiedLoginForm" class="auth-form">
+                        <div id="loginErrorMessage" class="auth-error-badge hidden">
+                            <span class="error-icon">⚠️</span>
+                            <span id="loginErrorText" class="error-text">Invalid credentials!</span>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">USERNAME</label>
+                            <input type="text" id="loginUsername" class="auth-input"
+                                placeholder="Username or Student ID" required autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PASSWORD</label>
+                            <input type="password" id="loginPassword" class="auth-input" placeholder="••••••••"
+                                required>
+                        </div>
+                        <button type="submit" class="auth-submit-btn" id="loginSubmitBtn">SIGN IN</button>
+                        <div class="auth-switch-text">
+                            Don't have a student account? <a href="#" class="auth-link" id="switchToRegister">Create
+                                Student Account</a>
+                        </div>
+                    </form>
+
+                    <!-- Create Account (Student Registration) Form -->
+                    <form id="registerForm" class="auth-form hidden">
+                        <div class="form-row-2">
+                            <div class="form-group">
+                                <label class="form-label">FIRST NAME</label>
+                                <input type="text" id="regFirstName" class="auth-input" placeholder="First Name"
+                                    required>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">LAST NAME</label>
+                                <input type="text" id="regLastName" class="auth-input" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">STUDENT ID</label>
+                            <input type="text" id="regStudentId" class="auth-input" placeholder="Student ID" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">SECTION</label>
+                            <select id="regSection" class="auth-select" required>
+                                <option value="" disabled selected>Select Section</option>
+                                <option value="1A">1A</option>
+                                <option value="1B">1B</option>
+                                <option value="1C">1C</option>
+                                <option value="2A">2A</option>
+                                <option value="2B">2B</option>
+                                <option value="2C">2C</option>
+                                <option value="3A">3A</option>
+                                <option value="3B">3B</option>
+                                <option value="4A">4A</option>
+                                <option value="4B">4B</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">PASSWORD</label>
+                            <input type="password" id="regPass" class="auth-input" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">CONFIRM PASSWORD</label>
+                            <input type="password" id="regConfirmPass" class="auth-input" placeholder="••••••••"
+                                required>
+                            <span class="input-note">Must match the password above.</span>
+                        </div>
+                        <button type="submit" class="auth-submit-btn">CREATE ACCOUNT</button>
+                        <div class="auth-switch-text">
+                            Already have an account? <a href="#" class="auth-link" id="switchToLogin">Sign In</a>
+                        </div>
+                    </form>
+
+                    <div class="auth-modal-footer">CONVENIRE SYSTEM SERVICING TRAINER · ROLE-BASED ACCESS CONTROL</div>
+                </div>
+            </div>
+
+            <!-- Custom Cyber Alert Modal (In-Game Notice) -->
+            <div class="custom-alert" id="alertBox">
+                <div class="custom-alert-box">
+                    <div class="alert-icon-ring" id="alertIconRing">⚡</div>
+                    <h2 id="alertTitle">SYSTEM ALERT</h2>
+                    <p id="alertMsg">Message goes here</p>
+                    <button class="alert-confirm-btn" id="alertConfirmBtn" onclick="closeAlert()">ACKNOWLEDGE</button>
+                </div>
+            </div>
+
+            <!-- Custom Cyber Confirm Modal (In-Game Confirmation e.g. Log Out) -->
+            <div class="custom-alert" id="confirmModalBox">
+                <div class="custom-alert-box confirm-box">
+                    <div class="alert-icon-ring" id="confirmIconRing"
+                        style="border-color: #ff3366; color: #ff3366; text-shadow: 0 0 10px #ff3366;">⚠️</div>
+                    <h2 id="confirmTitle" style="color: #ff3366;">LOG OUT CONFIRMATION</h2>
+                    <p id="confirmMsg">Logged in as Player. Would you like to Log Out?</p>
+                    <div class="confirm-btn-row">
+                        <button class="confirm-action-btn" id="confirmOkBtn">LOG OUT</button>
+                        <button class="confirm-cancel-btn" id="confirmCancelBtn">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+
+            <script src="javascript/storyEngine.js?v=20261002b"></script>
+            <script src="javascript/authEngine.js?v=20261002b"></script>
+            <script src="javascript/tutorialEngine.js?v=20261002b"></script>
+            <script src="javascript/cyberVideoEngine.js?v=20261002b"></script>
+            <script src="javascript/script.js?v=20261002b"></script>
+</body>
+
+</html>

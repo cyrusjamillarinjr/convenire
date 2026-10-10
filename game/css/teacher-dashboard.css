@@ -1,0 +1,389 @@
+/* CONVENIRE — Teacher Dashboard Styles
+   Matches the in-game cyberpunk visual language: dark backgrounds,
+   cyan/blue neon accents, Orbitron/Share Tech Mono typography,
+   glowing borders and scanline-style dividers.
+*/
+
+:root {
+    --cyan: #00f5ff;
+    --blue: #007bff;
+    --bg-dark: #05070d;
+    --panel-bg: rgba(6, 12, 22, 0.88);
+    --border-glow: rgba(0, 245, 255, 0.35);
+    --text-main: #e6faff;
+    --text-muted: #7fa6b3;
+    --score-high: #00ff88;
+    --score-mid: #ffcc00;
+    --score-low: #ff4d6d;
+    --font-display: 'Orbitron', sans-serif;
+    --font-body: 'Rajdhani', sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: var(--bg-dark);
+    color: var(--text-main);
+    font-family: var(--font-body);
+    overflow-x: hidden;
+}
+
+/* Background video, same treatment as the gameplay stages */
+.gameplay-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: -3;
+    filter: brightness(0.35) saturate(1.1);
+}
+
+.video-overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.75) 0%, rgba(3, 8, 16, 0.9) 60%, rgba(0, 0, 0, 0.95) 100%);
+    z-index: -2;
+}
+
+/* Layout */
+.td-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 20px;
+}
+
+.td-panel {
+    width: 100%;
+    max-width: 980px;
+    background: var(--panel-bg);
+    border: 1px solid var(--border-glow);
+    border-radius: 14px;
+    box-shadow: 0 0 35px rgba(0, 245, 255, 0.12), inset 0 0 60px rgba(0, 245, 255, 0.03);
+    backdrop-filter: blur(6px);
+    padding: 28px 30px 24px;
+}
+
+/* Header */
+.td-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    border-bottom: 1px solid var(--border-glow);
+    padding-bottom: 16px;
+    margin-bottom: 20px;
+}
+
+.td-header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.td-page-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+}
+
+.td-title {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 1px;
+    color: var(--cyan);
+    text-shadow: 0 0 14px rgba(0, 245, 255, 0.55);
+}
+
+.td-admin-tag {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    color: var(--blue);
+    border: 1px solid var(--blue);
+    padding: 6px 14px;
+    border-radius: 20px;
+    background: rgba(0, 123, 255, 0.08);
+}
+
+/* Summary bar */
+.td-summary-bar {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.td-summary-item {
+    flex: 1;
+    min-width: 140px;
+    background: rgba(0, 245, 255, 0.04);
+    border: 1px solid rgba(0, 245, 255, 0.18);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.td-summary-num {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-shadow: 0 0 10px rgba(0, 245, 255, 0.4);
+}
+
+.td-summary-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+}
+
+/* Search bar */
+.td-search-bar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 245, 255, 0.25);
+    border-radius: 24px;
+    padding: 10px 18px;
+    margin-bottom: 18px;
+}
+
+.td-search-bar svg {
+    width: 18px;
+    height: 18px;
+    fill: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.td-search-bar input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-main);
+    font-family: var(--font-body);
+    font-size: 14px;
+    letter-spacing: 0.5px;
+}
+
+.td-search-bar input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Table */
+.td-table-wrapper {
+    max-height: 480px;
+    overflow-y: auto;
+    border: 1px solid rgba(0, 245, 255, 0.18);
+    border-radius: 10px;
+}
+
+.td-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-body);
+}
+
+.td-table thead th {
+    position: sticky;
+    top: 0;
+    background: rgba(0, 20, 30, 0.95);
+    color: var(--cyan);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid rgba(0, 245, 255, 0.3);
+    white-space: nowrap;
+}
+
+.td-table thead th.sortable {
+    cursor: pointer;
+    user-select: none;
+}
+
+.td-table thead th.sortable:hover {
+    color: #fff;
+}
+
+.td-sort-icon {
+    opacity: 0.6;
+    margin-left: 4px;
+    font-size: 10px;
+}
+
+.td-table thead th.sort-asc .td-sort-icon,
+.td-table thead th.sort-desc .td-sort-icon {
+    opacity: 1;
+    color: var(--cyan);
+}
+
+.td-table tbody tr {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    transition: background 0.15s ease;
+}
+
+.td-table tbody tr:hover {
+    background: rgba(0, 245, 255, 0.05);
+}
+
+.td-table tbody td {
+    padding: 12px 16px;
+    font-size: 14.5px;
+    color: var(--text-main);
+}
+
+.td-student-name {
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.td-date-time {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--text-muted);
+}
+
+.td-score {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    padding: 3px 12px;
+    border-radius: 12px;
+    display: inline-block;
+}
+
+.td-score.high {
+    color: var(--score-high);
+    background: rgba(0, 255, 136, 0.1);
+    border: 1px solid rgba(0, 255, 136, 0.35);
+}
+
+.td-score.mid {
+    color: var(--score-mid);
+    background: rgba(255, 204, 0, 0.1);
+    border: 1px solid rgba(255, 204, 0, 0.35);
+}
+
+.td-score.low {
+    color: var(--score-low);
+    background: rgba(255, 77, 109, 0.1);
+    border: 1px solid rgba(255, 77, 109, 0.35);
+}
+
+.td-score.none {
+    color: var(--text-muted);
+}
+
+.td-loading-row td,
+.td-empty-row td {
+    text-align: center;
+    padding: 46px 20px;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 1px;
+}
+
+/* Footer actions — same button language as the gameplay stages */
+.footer-actions {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-top: 22px;
+}
+
+.footer-actions button {
+    font-family: var(--font-display);
+    font-size: 12.5px;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: var(--cyan);
+    background: rgba(0, 245, 255, 0.08);
+    border: 1px solid var(--cyan);
+    border-radius: 24px;
+    padding: 11px 22px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.footer-actions button:hover {
+    background: rgba(0, 245, 255, 0.2);
+    box-shadow: 0 0 14px rgba(0, 245, 255, 0.4);
+}
+
+.footer-actions .power-btn {
+    color: #ff4d6d;
+    border-color: #ff4d6d;
+    background: rgba(255, 77, 109, 0.08);
+}
+
+.footer-actions .power-btn:hover {
+    background: rgba(255, 77, 109, 0.2);
+    box-shadow: 0 0 14px rgba(255, 77, 109, 0.4);
+}
+
+.footer-actions .reset-btn {
+    color: #ffaa00;
+    border-color: #ffaa00;
+    background: rgba(255, 170, 0, 0.08);
+}
+
+.footer-actions .reset-btn:hover {
+    background: rgba(255, 170, 0, 0.22);
+    box-shadow: 0 0 14px rgba(255, 170, 0, 0.45);
+}
+
+/* Scrollbar */
+.td-table-wrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.td-table-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.td-table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0, 245, 255, 0.3);
+    border-radius: 4px;
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+    .td-panel {
+        padding: 20px 16px;
+    }
+
+    .td-title {
+        font-size: 19px;
+    }
+
+    .td-summary-item {
+        min-width: 100%;
+    }
+
+    .td-table thead th,
+    .td-table tbody td {
+        padding: 10px 10px;
+        font-size: 13px;
+    }
+}

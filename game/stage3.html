@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVENIRE · Stage 3: Realistic RJ-45 Cable Crimping Simulator</title>
+    <link rel="stylesheet" href="css/stage3.css?v=2.2">
+</head>
+
+<body>
+    <!-- Aura Gradient: Glacier Mist Background Container -->
+    <div class="aura-bg">
+        <div class="aura-layer-1" aria-hidden="true"></div>
+        <div class="aura-layer-2" aria-hidden="true"></div>
+
+        <!-- Ambient Video Layer -->
+        <video id="gameplayVideo" class="background-video" autoplay loop muted playsinline>
+            <source src="video/vidzzzz.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+
+        <!-- Game Audio Elements (Matching Stage 1 and Stage 2) -->
+        <audio id="gameMusic" loop>
+            <source src="audio/gameplay-music.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="dragSound">
+            <source src="audio/drag.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="dropSound">
+            <source src="audio/drop.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="errorSound">
+            <source src="audio/error.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="clickSound">
+            <source src="audio/click.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="successSound">
+            <source src="audio/victory.mp3" type="audio/mpeg">
+        </audio>
+
+        <!-- Main Content Wrapper -->
+        <div class="game-container">
+            <!-- Header HUD Bar (Aligned with Stage 1 & Stage 2) -->
+            <header class="game-header">
+                <div class="stage-title-wrap">
+                    <span class="stage-badge">STAGE 03</span>
+                    <span class="stage-title" id="stageName">RJ-45 Cable Fabrication</span>
+                </div>
+
+                <!-- Diagnostic LED Status Bar -->
+                <div class="led-status-bar" title="Hardware Fabrication Diagnostics">
+                    <div class="led-status-label">FAB STATUS:</div>
+                    <div class="led-indicator" id="indJacket" title="Outer Jacket Status">
+                        <div class="led-dot active-amber" id="ledJacket"></div>
+                        <span id="labelJacket">JACKET: INTACT</span>
+                    </div>
+                    <div class="led-indicator" id="indPlugA" title="Plug End A Pins Status">
+                        <div class="led-dot" id="ledPlugA"></div>
+                        <span id="labelPlugA">PLUG A: 0/8</span>
+                    </div>
+                    <div class="led-indicator" id="indPlugB" title="Plug End B Pins Status">
+                        <div class="led-dot" id="ledPlugB"></div>
+                        <span id="labelPlugB">PLUG B: 0/8</span>
+                    </div>
+                    <div class="led-indicator" id="indCrimp" title="Crimper Status">
+                        <div class="led-dot" id="ledCrimp"></div>
+                        <span id="labelCrimp">CRIMP: STANDBY</span>
+                    </div>
+                </div>
+
+                <!-- Telemetry Progress & Counters -->
+                <div class="progress">
+                    <!-- In-Game Technician Session Indicator -->
+                    <div class="user-session-hud-pill" id="stageUserPill" title="Active Technician Session">
+                        <span class="status-pulse-dot offline"></span>
+                        <span class="user-hud-info"><span class="user-hud-name">LOADING...</span></span>
+                    </div>
+
+                    <div class="slot-counter" title="Total Wire Leads Seated (Plug A + Plug B)">
+                        <span class="counter-icon">🔌</span>
+                        <span class="counter-label">LEADS:</span>
+                        <span class="counter-val" id="placedCounter">0/16</span>
+                    </div>
+                    <div class="score-pill" id="scorePill" title="Current Score">
+                        <span class="score-icon">🏆</span>
+                        <span class="score-label">SCORE:</span>
+                        <span class="score-val" id="scoreDisplay">0</span>
+                    </div>
+                    <div class="timer-pill" title="Time Remaining">
+                        <span class="timer-icon">⏱</span>
+                        <span class="timer" id="timerDisplay">02:00</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- 5-STEP REALISTIC WORKFLOW PIPELINE BAR -->
+            <div class="workflow-pipeline-bar">
+                <div class="step-node active" id="stepNode1"><span class="step-num">1</span> <span>STRIP JACKET
+                        ✂️</span></div>
+                <div class="step-node" id="stepNode2"><span class="step-num">2</span> <span>ALIGN PINS 🎨</span></div>
+                <div class="step-node" id="stepNode3"><span class="step-num">3</span> <span>TRIM EVEN ✂️</span></div>
+                <div class="step-node" id="stepNode4"><span class="step-num">4</span> <span>CRIMP PLUG 🔧</span></div>
+                <div class="step-node" id="stepNode5"><span class="step-num">5</span> <span>TEST LINK ⚡</span></div>
+            </div>
+
+            <!-- Stage 3 Main Layout -->
+            <div class="stage3-layout">
+                <!-- Left Column: Strip Outer Jacket Workstation -->
+                <aside class="reference-card">
+                    <div class="jacket-strip-panel" id="jacketStripPanel">
+                        <div class="strip-panel-header">
+                            <span class="step-badge">STEP 1: PREPARATION</span>
+                            <span class="strip-status-badge" id="stripStatusBadge">JACKET INTACT 🔒</span>
+                        </div>
+                        <div class="strip-icon-large" id="stripIconLarge">✂️</div>
+                        <h3 class="strip-main-title" id="stripMainTitle">STRIP OUTER JACKET</h3>
+                        <p class="strip-status-hint" id="stripStatusHint">Strip Cat6 outer sheath to expose 8
+                            color-coded conductors.</p>
+                        <button class="strip-jacket-btn-main" id="stripJacketBtn">
+                            <span class="strip-btn-icon">✂️</span>
+                            <span class="strip-btn-title" id="stripBtnMainText">STRIP OUTER JACKET</span>
+                        </button>
+                        <span class="strip-key-shortcut" id="stripKeyShortcut">OR PRESS [J]</span>
+                    </div>
+                </aside>
+
+                <!-- Right Column: Interactive RJ-45 Fabrication Workspace -->
+                <main class="crimping-workspace">
+                    <div class="workspace-header">
+                        <div>
+                            <h2 class="workspace-title">RJ-45 CABLE FABRICATION SIMULATOR</h2>
+                            <p class="workspace-subtitle" style="color: #88b0c0; font-size: 0.85rem; margin-top:4px;">
+                                Target Mission: <strong id="targetMissionLabel" style="color:#00f5ff;">Straight-Through
+                                    (T568A)</strong>. Follow the 5 practical assessment steps.
+                            </p>
+                        </div>
+                        <span class="mode-badge" id="missionBadge">MISSION: T568A</span>
+                    </div>
+
+                    <!-- Dual Plug Selector Tabs (Plug A & Plug B for Crossover / Straight-Through) -->
+                    <div class="plug-selector-bar">
+                        <button class="plug-tab-btn active" id="plugTabA">
+                            <span class="plug-status-dot" id="dotPlugA"></span>
+                            <span>PLUG END A (T568A)</span>
+                        </button>
+                        <button class="plug-tab-btn" id="plugTabB">
+                            <span class="plug-status-dot" id="dotPlugB"></span>
+                            <span>PLUG END B (T568A)</span>
+                        </button>
+                    </div>
+
+                    <!-- REALISTIC TRANSPARENT CLEAR PLUG CONNECTOR HOUSING -->
+                    <div class="rj45-connector-box" id="rj45Box">
+                        <div class="rj45-header">
+                            <span class="plug-label" id="activePlugTitle">🔌 CLEAR RJ-45 MODULAR PLUG (TOP VIEW)</span>
+                            <span style="font-family:'Share Tech Mono', monospace; font-size:0.8rem; color:#88b0c0;">8
+                                GOLD CONTACT BLADES</span>
+                        </div>
+
+                        <!-- Real Clear Plastic Plug Body Assembly -->
+                        <div class="real-plug-chamber">
+                            <!-- Top Gold Contact Teeth Array Header -->
+                            <div class="gold-teeth-header">
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_0"></div><span class="pin-num-label">PIN
+                                        1</span><span class="pin-func-sub">Tx+</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_1"></div><span class="pin-num-label">PIN
+                                        2</span><span class="pin-func-sub">Tx-</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_2"></div><span class="pin-num-label">PIN
+                                        3</span><span class="pin-func-sub">Rx+</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_3"></div><span class="pin-num-label">PIN
+                                        4</span><span class="pin-func-sub">Bi-</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_4"></div><span class="pin-num-label">PIN
+                                        5</span><span class="pin-func-sub">Bi+</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_5"></div><span class="pin-num-label">PIN
+                                        6</span><span class="pin-func-sub">Rx-</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_6"></div><span class="pin-num-label">PIN
+                                        7</span><span class="pin-func-sub">Bi-</span>
+                                </div>
+                                <div class="gold-teeth-slot">
+                                    <div class="gold-tooth-blade" id="goldTooth_7"></div><span class="pin-num-label">PIN
+                                        8</span><span class="pin-func-sub">Bi+</span>
+                                </div>
+                            </div>
+
+                            <!-- 8 Parallel Internal Wire Channels -->
+                            <div class="channels-grid" id="slotsContainer">
+                                <!-- Populated dynamically by stage3.js -->
+                            </div>
+                        </div>
+
+                        <!-- Bottom Cat6 Sheath Boot -->
+                        <div class="cat6-cable-jacket" id="cableJacketElem">
+                            <div class="jacket-info-row">
+                                <span class="jacket-indicator-pill" id="cableJacketPill">JACKET: INTACT 🔒</span>
+                                <span class="jacket-text" id="cableJacketLabel">CAT6 UTP CABLE SHEATH [INTACT]</span>
+                            </div>
+                            <button class="strip-jacket-btn" id="stripJacketCableBtn">STRIP OUTER JACKET ✂️</button>
+                        </div>
+                    </div>
+
+                    <!-- Available Loose Wire Pool -->
+                    <div class="wires-pool-container">
+                        <div class="pool-header-row">
+                            <div class="pool-title" id="wirePoolTitle">AVAILABLE UNSTRIPPED WIRES (DRAG OR CLICK TO
+                                PLACE)</div>
+                            <span class="pool-jacket-indicator" id="poolJacketIndicator">🔒 JACKET NOT STRIPPED</span>
+                        </div>
+                        <div class="wires-grid" id="wirePool">
+                            <!-- Populated dynamically with randomized wires by stage3.js -->
+                        </div>
+                    </div>
+
+                    <!-- CYBER HUD SYSTEM LOG MESSAGE -->
+                    <div class="message-container">
+                        <div class="terminal-badge">
+                            <span class="terminal-led"></span>
+                            <span class="terminal-tag">SYS_TERMINAL</span>
+                        </div>
+                        <div class="message-area" id="gameMessage">Align all 8 colored wires for Plug End A & End B,
+                            then squeeze the Crimp Tool to test.</div>
+                    </div>
+
+                    <!-- Bottom Cyber Command Deck (Cohesive with Stage 1 & Stage 2) -->
+                    <div class="cyber-nav-deck">
+                        <div class="nav-energy-rail"></div>
+
+                        <!-- Left Control Cluster -->
+                        <div class="nav-buttons-group left">
+                            <a href="index.html" id="backToMenuBtn" class="cyber-btn btn-back"
+                                style="text-decoration: none;" title="Return to Main Menu [ESC]">
+                                <span class="btn-icon">⮜</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">MENU</span>
+                                    <span class="btn-shortcut">ESC</span>
+                                </span>
+                            </a>
+
+                            <button id="storyBriefBtn" class="cyber-btn btn-story" title="View Story Briefing [S]">
+                                <span class="btn-icon">📖</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">STORY</span>
+                                    <span class="btn-shortcut">LORE</span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Center Hero Squeeze Crimp Tool Reactor Switch -->
+                        <div class="nav-power-center">
+                            <button id="crimpBtn" class="cyber-power-switch"
+                                title="Squeeze Crimp Tool & Test Cable [SPACE]">
+                                <div class="reactor-core">
+                                    <div class="reactor-ring"></div>
+                                    <div class="reactor-sparks"></div>
+                                    <span class="power-glyph">🔧</span>
+                                </div>
+                                <div class="power-label-group">
+                                    <span class="power-main-label">CRIMP TOOL</span>
+                                    <span class="power-sub-label" id="crimpStatusLabel">TEST CABLE</span>
+                                </div>
+                                <div class="power-glow-aura"></div>
+                            </button>
+                        </div>
+
+                        <!-- Right Control Cluster -->
+                        <div class="nav-buttons-group right">
+                            <button id="resetBtn" class="cyber-btn btn-reset" title="Reset All Pins [R]">
+                                <span class="btn-icon rotate-hover">↺</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">RESET</span>
+                                    <span class="btn-shortcut">CLEAR</span>
+                                </span>
+                            </button>
+
+                            <a href="index.html" class="cyber-btn btn-next" style="text-decoration: none;"
+                                title="Return to Game Menu">
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">VICTORY</span>
+                                    <span class="btn-shortcut">HUB</span>
+                                </span>
+                                <span class="btn-icon btn-arrow-pulse">➔</span>
+                                <div class="btn-shine"></div>
+                            </a>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- LAN Cable Tester Diagnostics Modal -->
+    <div class="tester-modal-overlay" id="testerModal">
+        <div class="tester-card">
+            <!-- Cyber Corner Reticles -->
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="tester-header-wrap">
+                <span class="tester-badge-tag">CONTINUITY & BANDWIDTH PROTOCOL</span>
+                <h2 class="tester-header">⚡ DUAL-END LAN CABLE TESTER ⚡</h2>
+            </div>
+
+            <div class="tester-banks-wrap" id="testerBanksWrap">
+                <!-- Populated dynamically with End A (8 LEDs) and End B (8 LEDs) by stage3.js -->
+            </div>
+
+            <div class="tester-status-msg" id="testerStatusMsg">TESTING LAN CABLE SEQUENCING...</div>
+
+            <div class="tester-actions-row" id="testerActionsRow">
+                <button class="btn-cyber-action" id="closeTesterBtn">CLOSE & CONTINUE ➔</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- CSS NC II Technician Bonus Quiz Modal (5 Questions) -->
+    <div class="bonus-quiz-modal-overlay" id="bonusQuizModal">
+        <div class="bonus-quiz-card">
+            <!-- Cyber Corner Reticles -->
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="quiz-header-wrap">
+                <div class="quiz-badge-row">
+                    <span class="quiz-stage-badge">⚡ BONUS ROUND POP-UP</span>
+                    <span class="quiz-count-badge" id="quizProgressBadge">QUESTION 1 / 5</span>
+                    <span class="quiz-points-badge" id="quizPointsBadge">BONUS: +0 PTS</span>
+                </div>
+                <h2 class="quiz-header-title">🎓 CSS NC II TECHNICIAN BONUS QUIZ</h2>
+                <p class="quiz-header-sub">Cable Continuity Verified! Answer these 5 bonus questions to earn up to +40
+                    bonus points (8 pts each)!</p>
+            </div>
+
+            <!-- Quiz Question & Options Area -->
+            <div class="quiz-body-wrap" id="quizBodyWrap">
+                <div class="quiz-question-box">
+                    <span class="quiz-q-num" id="quizQNum">Q1</span>
+                    <p class="quiz-q-text" id="quizQText">Loading question...</p>
+                </div>
+
+                <div class="quiz-options-grid" id="quizOptionsGrid">
+                    <!-- Populated dynamically by stage3.js -->
+                </div>
+
+                <!-- Educational CSS Technician Knowledge Box -->
+                <div class="quiz-insight-box" id="quizInsightBox" style="display: none;">
+                    <div class="insight-header">
+                        <span class="insight-icon" id="insightIcon">💡</span>
+                        <span class="insight-title" id="insightTitle">CSS TECHNICIAN INSIGHT</span>
+                    </div>
+                    <p class="insight-desc" id="insightDesc"></p>
+                </div>
+            </div>
+
+            <div class="quiz-footer-row" id="quizFooterRow">
+                <button class="btn-cyber-action" id="quizNextBtn" style="display: none;">
+                    <span>NEXT QUESTION</span>
+                    <span>➔</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cyber Time Up Indicator Modal -->
+    <div class="tester-modal-overlay" id="timeUpModal">
+        <div class="tester-card timeup-card">
+            <!-- Cyber Corner Reticles -->
+            <div class="hud-corner top-left"></div>
+            <div class="hud-corner top-right"></div>
+            <div class="hud-corner bottom-left"></div>
+            <div class="hud-corner bottom-right"></div>
+
+            <div class="stage3-indicator-box indicator-fail">
+                <div class="indicator-icon-ring fail-ring">⏰</div>
+                <div class="indicator-badge-pill fail-badge">TIME WINDOW EXPIRED</div>
+                <h2 class="indicator-title fail-title">TIMES UP!</h2>
+                <p class="indicator-desc">The fabrication time limit has run out before the cable was crimped and
+                    tested. Review your T568A/T568B pin sequence and try again!</p>
+
+                <div class="indicator-stats-grid">
+                    <div class="stat-pill">
+                        <span class="stat-label">LEADS PLACED</span>
+                        <span class="stat-val fail" id="timeUpLeadsVal">0/16</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">SCORE SAVED</span>
+                        <span class="stat-val highlight" id="timeUpScoreVal">0 PTS</span>
+                    </div>
+                    <div class="stat-pill">
+                        <span class="stat-label">STATUS</span>
+                        <span class="stat-val fail">EXPIRED ⏳</span>
+                    </div>
+                </div>
+
+                <div class="indicator-actions-wrap"
+                    style="margin-top: 10px; display: flex; gap: 12px; width: 100%; justify-content: center;">
+                    <button class="indicator-btn btn-cyber-action" id="timeUpRetryBtn">
+                        <span>↺ RETRY MISSION</span>
+                    </button>
+                    <a href="index.html" class="indicator-btn btn-secondary-close"
+                        style="text-decoration: none; display: flex; align-items: center; justify-content: center;">
+                        <span>RETURN TO MENU</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Cyber Alert Modal -->
+    <div class="custom-alert" id="alertBox">
+        <div class="custom-alert-box">
+            <div class="alert-icon-ring" id="alertIconRing">⚡</div>
+            <h2 id="alertTitle">SYSTEM ALERT</h2>
+            <p id="alertMsg">Message goes here</p>
+            <button class="alert-confirm-btn" onclick="closeAlert()">ACKNOWLEDGE</button>
+        </div>
+    </div>
+
+    <!-- Custom Cyber Confirm Modal (In-Game Confirmation) -->
+    <div class="custom-alert" id="confirmModalBox">
+        <div class="custom-alert-box confirm-box">
+            <div class="alert-icon-ring" id="confirmIconRing"
+                style="border-color: #ff3366; color: #ff3366; text-shadow: 0 0 10px #ff3366;">⚠️</div>
+            <h2 id="confirmTitle" style="color: #ff3366;">LOG OUT CONFIRMATION</h2>
+            <p id="confirmMsg">Logged in as Player. Would you like to Log Out?</p>
+            <div class="confirm-btn-row">
+                <button class="confirm-action-btn" id="confirmOkBtn">LOG OUT</button>
+                <button class="confirm-cancel-btn" id="confirmCancelBtn">CANCEL</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- System & Game Scripts -->
+    <script src="javascript/authEngine.js?v=20261008b"></script>
+    <script src="javascript/storyEngine.js?v=2.2"></script>
+    <script src="javascript/cyberVideoEngine.js?v=2.2"></script>
+    <script src="javascript/stage3.js?v=20261008b"></script>
+</body>
+
+</html>

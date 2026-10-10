@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVENIRE · Stage 1: Motherboard Basics</title>
+
+    <!-- Google Fonts Preconnect & Cyber / HUD Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/stage1.css">
+</head>
+
+<body class="game-active">
+    <!-- Aura Gradient: Glacier Mist Background Container -->
+    <div class="aura-bg">
+        <div class="aura-layer-1" aria-hidden="true"></div>
+        <div class="aura-layer-2" aria-hidden="true"></div>
+
+        <!-- Content Wrapper -->
+        <div class="main-content-wrapper">
+
+            <!-- ===== MAP SELECTION SCREEN ===== -->
+            <div id="mapSelectionOverlay" class="map-selection-overlay">
+                <!-- Animated scan lines -->
+                <div class="map-sel-scanlines" aria-hidden="true"></div>
+                <!-- Corner reticles -->
+                <div class="map-sel-corner tl" aria-hidden="true"></div>
+                <div class="map-sel-corner tr" aria-hidden="true"></div>
+                <div class="map-sel-corner bl" aria-hidden="true"></div>
+                <div class="map-sel-corner br" aria-hidden="true"></div>
+
+                <div class="map-sel-content">
+                    <div class="map-sel-header">
+                        <div class="map-sel-badge">STAGE 01 · PRE-BOOT</div>
+                        <h1 class="map-sel-title">SELECT MOTHERBOARD</h1>
+                        <p class="map-sel-subtitle">Choose your PCB chassis before initializing the assembly sequence
+                        </p>
+                    </div>
+
+                    <div class="map-sel-cards">
+
+                        <!-- CLASSIC BOARD CARD -->
+                        <div class="map-card" id="mapCardClassic" data-map="classic" tabindex="0" role="button"
+                            aria-label="Select Classic Motherboard">
+                            <div class="map-card-glow"></div>
+                            <div class="map-card-badge">LEGACY</div>
+                            <div class="map-card-img-wrap">
+                                <img src="images/map.png" alt="Classic ATX Motherboard" class="map-card-img"
+                                    id="mapPreviewClassic">
+                                <div class="map-card-img-overlay">
+                                    <span class="map-card-select-label">SELECT</span>
+                                </div>
+                            </div>
+                            <div class="map-card-info">
+                                <h2 class="map-card-name">Classic ATX Board</h2>
+                                <p class="map-card-desc">PCB ID: ATX-MB-REV2 // LGA-775 Socket<br>Vintage green PCB with
+                                    ISA / PCI legacy slots. The original hardware battlefield.</p>
+                                <div class="map-card-tags">
+                                    <span class="map-tag">GREEN PCB</span>
+                                    <span class="map-tag">LGA-775</span>
+                                    <span class="map-tag">LEGACY</span>
+                                </div>
+                            </div>
+                            <div class="map-card-select-btn">DEPLOY CLASSIC</div>
+                        </div>
+
+                        <!-- MODERN BOARD CARD -->
+                        <div class="map-card map-card-featured" id="mapCardModern" data-map="modern" tabindex="0"
+                            role="button" aria-label="Select Modern Motherboard">
+                            <div class="map-card-glow"></div>
+                            <div class="map-card-badge badge-new">NEW</div>
+                            <div class="map-card-badge-2">FEATURED</div>
+                            <div class="map-card-img-wrap">
+                                <img src="images/modern_map.jpg" alt="Modern RGB Gaming Motherboard"
+                                    class="map-card-img" id="mapPreviewModern">
+                                <div class="map-card-img-overlay">
+                                    <span class="map-card-select-label">SELECT</span>
+                                </div>
+                            </div>
+                            <div class="map-card-info">
+                                <h2 class="map-card-name">Modern Z890 Gaming Board</h2>
+                                <p class="map-card-desc">PCB ID: Z890-CYBERNETIX // LGA-1700<br>Next-gen black PCB with
+                                    DDR5, PCIe 5.0, M.2 Gen5 &amp; full ARGB illumination.</p>
+                                <div class="map-card-tags">
+                                    <span class="map-tag tag-cyan">BLACK PCB</span>
+                                    <span class="map-tag tag-cyan">LGA-1700</span>
+                                    <span class="map-tag tag-cyan">DDR5</span>
+                                    <span class="map-tag tag-violet">RGB</span>
+                                </div>
+                            </div>
+                            <div class="map-card-select-btn btn-cyan">DEPLOY MODERN</div>
+                        </div>
+
+                    </div>
+
+                    <div class="map-sel-footer">
+                        <span class="map-sel-footer-txt">Both maps share the same 7-component assembly challenge</span>
+                    </div>
+                </div>
+            </div>
+            <!-- ===== END MAP SELECTION SCREEN ===== -->
+
+            <!-- Victory particle explosion canvas -->
+            <canvas id="victorySparksCanvas" class="victory-sparks-canvas"></canvas>
+
+            <!-- Video Background -->
+            <video id="gameplayVideo" class="gameplay-video" autoplay loop muted playsinline>
+                <source src="video/vidzzzz.mp4" type="video/mp4">
+            </video>
+            <div class="video-overlay"></div>
+
+            <!-- Game Audio Elements -->
+            <audio id="gameMusic" loop>
+                <source src="audio/gameplay-music.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="dragSound">
+                <source src="audio/drag.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="dropSound">
+                <source src="audio/drop.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="errorSound">
+                <source src="audio/error.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="clickSound">
+                <source src="audio/click.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="successSound">
+                <source src="audio/victory.mp3" type="audio/mpeg">
+            </audio>
+
+            <!-- Main Cyber Game Container -->
+            <div class="game-container" id="gameContainer">
+                <div id="gamePanel" class="game-panel visible">
+
+                    <!-- TOP CYBER HUD HEADER -->
+                    <div class="game-header">
+                        <div class="stage-title-wrap">
+                            <span class="stage-badge">STAGE 01</span>
+                            <span class="stage-title" id="stageName">Motherboard Assembly</span>
+                        </div>
+
+                        <!-- Diagnostic LED Status Panel -->
+                        <div class="led-status-bar" title="Hardware Diagnostic Status LEDs">
+                            <div class="led-status-label">POST DIAGNOSTICS:</div>
+                            <div class="led-indicator" id="indCpu">
+                                <div class="led-dot" id="ledCpu"></div>
+                                <span>CPU</span>
+                            </div>
+                            <div class="led-indicator" id="indRam">
+                                <div class="led-dot" id="ledRam"></div>
+                                <span>RAM</span>
+                            </div>
+                            <div class="led-indicator" id="indGpu">
+                                <div class="led-dot" id="ledGpu"></div>
+                                <span>GPU</span>
+                            </div>
+                            <div class="led-indicator" id="indPwr">
+                                <div class="led-dot" id="ledPwr"></div>
+                                <span>PWR</span>
+                            </div>
+                        </div>
+
+                        <!-- Telemetry HUD & Timers -->
+                        <div class="progress">
+                            <!-- In-Game Technician Session Indicator -->
+                            <div class="user-session-hud-pill" id="stageUserPill" title="Active Technician Session">
+                                <span class="status-pulse-dot offline"></span>
+                                <span class="user-hud-info"><span class="user-hud-name">LOADING...</span></span>
+                            </div>
+
+                            <div class="slot-counter" title="Placed Components Counter">
+                                <span class="counter-icon">📦</span>
+                                <span class="counter-label">SOCKETS:</span>
+                                <span class="counter-val" id="placedCounter">0/7</span>
+                            </div>
+                            <div class="score-pill" title="Current Score">
+                                <span class="score-icon">🏆</span>
+                                <span id="scoreDisplay">0</span>
+                            </div>
+                            <div class="timer-pill" title="Time Remaining">
+                                <span class="timer-icon">⏱</span>
+                                <span class="timer" id="timerDisplay">01:00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- MAIN ASSEMBLY WORKSPACE -->
+                    <div class="assembly-area">
+
+                        <!-- LEFT PANEL: COMPONENT CYBER DOCK -->
+                        <div class="left-panel-wrapper">
+                            <div class="rack-header">
+                                <span class="rack-title">⚡ HARDWARE INVENTORY</span>
+                                <span class="rack-hint">DRAG TO SOCKET</span>
+                            </div>
+                            <div class="left-panel" id="componentContainer">
+
+                                <div class="component" draggable="true" id="cpu">
+                                    <div class="comp-icon-box">
+                                        <img src="images/cpu.png" alt="Intel Core i9 Desktop CPU">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">Desktop CPU</span>
+                                        <span class="comp-spec">LGA-1700 Socket • Core i9</span>
+                                    </div>
+                                    <span class="comp-tag">PROCESSOR</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="ram">
+                                    <div class="comp-icon-box">
+                                        <img src="images/RAM.png" alt="DDR5 RAM DIMM Module">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">DDR5 RAM Module</span>
+                                        <span class="comp-spec">Dual DIMM • 6000MHz</span>
+                                    </div>
+                                    <span class="comp-tag">MEMORY</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="gpu">
+                                    <div class="comp-icon-box">
+                                        <img src="images/GPU.png" alt="Dedicated PCIe Graphics Card">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">PCIe x16 GPU</span>
+                                        <span class="comp-spec">RTX 4090 • Dedicated Video</span>
+                                    </div>
+                                    <span class="comp-tag">GRAPHICS</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="pcie">
+                                    <div class="comp-icon-box">
+                                        <img src="images/PCIE.png" alt="PCIe Expansion Card">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">PCIe Expansion Card</span>
+                                        <span class="comp-spec">Wi-Fi 7 / High-Speed I/O</span>
+                                    </div>
+                                    <span class="comp-tag">EXPANSION</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="sata">
+                                    <div class="comp-icon-box">
+                                        <img src="images/SATA.png" alt="SATA 6Gbps Data Cable">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">SATA III Data Cable</span>
+                                        <span class="comp-spec">6Gbps Storage Bus</span>
+                                    </div>
+                                    <span class="comp-tag">STORAGE</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="pin24">
+                                    <div class="comp-icon-box">
+                                        <img src="images/24pin.png" alt="24-Pin ATX Main Power Cable">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">24-Pin ATX Power</span>
+                                        <span class="comp-spec">Main Board +12V/+5V/+3.3V</span>
+                                    </div>
+                                    <span class="comp-tag">POWER</span>
+                                </div>
+
+                                <div class="component" draggable="true" id="pin4">
+                                    <div class="comp-icon-box">
+                                        <img src="images/4pin.png" alt="4-Pin CPU +12V EPS Power Cable">
+                                    </div>
+                                    <div class="comp-info">
+                                        <span class="comp-name">4-Pin CPU +12V</span>
+                                        <span class="comp-spec">Auxiliary EPS CPU Power</span>
+                                    </div>
+                                    <span class="comp-tag">POWER</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- RIGHT: MOTHERBOARD CHASSIS -->
+                        <div class="board-wrapper">
+                            <div class="board-frame-header">
+                                <span class="pcb-meta-tag">PCB ID: ATX-MB-REV4 // SOCKET 1700 CHASSIS</span>
+                                <span class="pcb-status-tag" id="pcbStatus">STATUS: AWAITING COMPONENTS</span>
+                            </div>
+
+                            <div class="board">
+                                <!-- Cyber Corner Reticles -->
+                                <div class="hud-corner top-left"></div>
+                                <div class="hud-corner top-right"></div>
+                                <div class="hud-corner bottom-left"></div>
+                                <div class="hud-corner bottom-right"></div>
+
+                                <div class="circuit-pulse-overlay" id="circuitPulse"></div>
+                                <img src="images/map.png" class="board-img" alt="Motherboard PCB Layout Map">
+
+                                <!-- Exact Precise Drop Target Sockets -->
+                                <div class="drop-zone" data-accept="cpu"
+                                    style="top: 210px; left: 400px; width: 132px; height: 100px;"></div>
+                                <div class="drop-zone" data-accept="ram"
+                                    style="top: 348px; left: 330px; width: 280px; height: 75px;"></div>
+                                <div class="drop-zone" data-accept="gpu"
+                                    style="top: 120px; left: 275px; width: 23px; height: 198px;"></div>
+                                <div class="drop-zone" data-accept="pcie"
+                                    style="top: 125px; left: 80px; width: 29px; height: 190px;"></div>
+                                <div class="drop-zone" data-accept="sata"
+                                    style="top: 390px; left: 90px; width: 47px; height: 77px;"></div>
+                                <div class="drop-zone" data-accept="pin24"
+                                    style="top: 445px; left: 400px; width: 105px; height: 28px;"></div>
+                                <div class="drop-zone" data-accept="pin4"
+                                    style="top: 110px; left: 610px; width: 25px; height: 35px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CYBER HUD SYSTEM LOG MESSAGE -->
+                    <div class="message-container">
+                        <div class="terminal-badge">
+                            <span class="terminal-led"></span>
+                            <span class="terminal-tag">SYS_TERMINAL</span>
+                        </div>
+                        <div class="message-area" id="gameMessage">Socket all 7 components into the motherboard and
+                            initiate power.</div>
+                    </div>
+
+                    <!-- ULTRA-PREMIUM CYBER COMMAND DECK (BOTTOM NAVIGATION) -->
+                    <div class="cyber-nav-deck" id="navDeck">
+                        <!-- Top Glowing Power Rail Accent -->
+                        <div class="nav-energy-rail"></div>
+
+                        <!-- Left Control Cluster -->
+                        <div class="nav-buttons-group left">
+                            <button id="backToMenuBtn" class="cyber-btn btn-back" title="Return to Main Menu [ESC]">
+                                <span class="btn-icon">⮜</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">MENU</span>
+                                    <span class="btn-shortcut">ESC</span>
+                                </span>
+                            </button>
+
+                            <button id="storyBriefBtn" class="cyber-btn btn-story" title="View Story Briefing [S]">
+                                <span class="btn-icon">📖</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">STORY</span>
+                                    <span class="btn-shortcut">LORE</span>
+                                </span>
+                            </button>
+                        </div>
+
+                        <!-- Center Hero Power Reactor Switch -->
+                        <div class="nav-power-center">
+                            <button id="powerBtn" class="cyber-power-switch"
+                                title="Initiate Motherboard Power Sequence [SPACE]">
+                                <div class="reactor-core">
+                                    <div class="reactor-ring"></div>
+                                    <div class="reactor-sparks"></div>
+                                    <span class="power-glyph">⏻</span>
+                                </div>
+                                <div class="power-label-group">
+                                    <span class="power-main-label">POWER</span>
+                                    <span class="power-sub-label" id="powerStatusLabel">BOOT PCB</span>
+                                </div>
+                                <div class="power-glow-aura"></div>
+                            </button>
+                        </div>
+
+                        <!-- Right Control Cluster -->
+                        <div class="nav-buttons-group right">
+                            <button id="resetStageBtn" class="cyber-btn btn-reset" title="Reset Stage Placement [R]">
+                                <span class="btn-icon rotate-hover">↺</span>
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">RESET</span>
+                                    <span class="btn-shortcut">RETRY</span>
+                                </span>
+                            </button>
+
+                            <button id="nextStageBtn" class="cyber-btn btn-next" title="Proceed to Stage 2 [ENTER]">
+                                <span class="btn-text-wrap">
+                                    <span class="btn-title">STAGE 02</span>
+                                    <span class="btn-shortcut" id="nextStageBadge">LOCKED</span>
+                                </span>
+                                <span class="btn-icon btn-arrow-pulse">➔</span>
+                                <div class="btn-shine"></div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Custom Cyber Alert Modal -->
+            <div class="custom-alert" id="alertBox">
+                <div class="custom-alert-box">
+                    <div class="alert-icon-ring" id="alertIconRing">⚡</div>
+                    <h2 id="alertTitle">SYSTEM ALERT</h2>
+                    <p id="alertMsg">Message goes here</p>
+                    <button class="alert-confirm-btn" onclick="closeAlert()">ACKNOWLEDGE</button>
+                </div>
+            </div>
+
+            <!-- Custom Cyber Confirm Modal (In-Game Confirmation) -->
+            <div class="custom-alert" id="confirmModalBox">
+                <div class="custom-alert-box confirm-box">
+                    <div class="alert-icon-ring" id="confirmIconRing"
+                        style="border-color: #ff3366; color: #ff3366; text-shadow: 0 0 10px #ff3366;">⚠️</div>
+                    <h2 id="confirmTitle" style="color: #ff3366;">LOG OUT CONFIRMATION</h2>
+                    <p id="confirmMsg">Logged in as Player. Would you like to Log Out?</p>
+                    <div class="confirm-btn-row">
+                        <button class="confirm-action-btn" id="confirmOkBtn">LOG OUT</button>
+                        <button class="confirm-cancel-btn" id="confirmCancelBtn">CANCEL</button>
+                    </div>
+                </div>
+            </div>
+
+        </div><!-- End content wrapper -->
+    </div><!-- End aura-bg -->
+
+    <!-- Engines & Scripts -->
+    <script src="javascript/authEngine.js?v=20261008b"></script>
+    <script src="javascript/storyEngine.js?v=20261002c"></script>
+    <script src="javascript/tutorialEngine.js?v=20261002c"></script>
+    <script src="javascript/cyberVideoEngine.js?v=20261002c"></script>
+    <script src="javascript/stage1.js?v=20261008b"></script>
+</body>
+
+</html>

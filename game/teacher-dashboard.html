@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CONVENIRE · Teacher Dashboard</title>
+    <meta name="description" content="Teacher Dashboard — Monitor student play activity and scores for CONVENIRE.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;800;900&family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/teacher-dashboard.css">
+</head>
+
+<body class="game-active">
+
+    <video id="gameplayVideo" class="gameplay-video" autoplay loop muted playsinline>
+        <source src="video/vidzzzz.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <div class="td-container">
+
+        <div class="td-panel">
+
+            <!-- Header -->
+            <div class="td-header">
+                <div class="td-header-left">
+                    <span class="td-page-label">NCII · SYSTEMS SERVICING TRAINER</span>
+                    <span class="td-title">📊 TEACHER DASHBOARD</span>
+                </div>
+                <div class="td-header-right">
+                    <span class="td-admin-tag" id="tdAdminName">TEACHER</span>
+                </div>
+            </div>
+
+            <!-- Summary -->
+            <div class="td-summary-bar">
+                <div class="td-summary-item">
+                    <span class="td-summary-num" id="tdStatSessions">0</span>
+                    <span class="td-summary-label">SESSIONS LOGGED</span>
+                </div>
+                <div class="td-summary-item">
+                    <span class="td-summary-num" id="tdStatStudents">0</span>
+                    <span class="td-summary-label">STUDENTS PLAYED</span>
+                </div>
+                <div class="td-summary-item">
+                    <span class="td-summary-num" id="tdStatAvgScore">—</span>
+                    <span class="td-summary-label">AVERAGE SCORE</span>
+                </div>
+            </div>
+
+            <!-- Search -->
+            <div class="td-search-bar">
+                <svg viewBox="0 0 24 24">
+                    <path
+                        d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
+                </svg>
+                <input type="text" id="tdSearch" placeholder="Search student name..." autocomplete="off">
+            </div>
+
+            <!-- Activity Table -->
+            <div class="td-table-wrapper">
+                <table class="td-table" id="tdTable">
+                    <thead>
+                        <tr>
+                            <th data-sort="studentId">STUDENT ID <span class="td-sort-icon">⇅</span></th>
+                            <th class="sortable" data-sort="name">STUDENT NAME <span class="td-sort-icon">⇅</span></th>
+                            <th class="sortable" data-sort="date">DATE &amp; TIME PLAYED <span
+                                    class="td-sort-icon">↓</span></th>
+                            <th class="sortable" data-sort="score">SCORE <span class="td-sort-icon">⇅</span></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tdTableBody">
+                        <tr class="td-loading-row">
+                            <td colspan="3">LOADING ACTIVITY DATA...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="footer-actions">
+                <button id="backToMenuBtn">⬅ BACK</button>
+                <button id="tdRefreshBtn" class="reset-btn">⊘ RESET RECORDS</button>
+                <button id="tdLogoutBtn" class="power-btn">⏻ SIGN OUT</button>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="javascript/authEngine.js?v=20261002b"></script>
+    <script src="javascript/cyberVideoEngine.js?v=20261002b"></script>
+    <script src="javascript/teacher-dashboard.js?v=20261002b"></script>
+</body>
+
+</html>

@@ -1,0 +1,1945 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CONVENIRE — AAA Educational Computer Hardware Puzzle Game</title>
+  <meta name="description"
+    content="Master Computer Hardware Through Interactive 3D Assembly & Diagnostics. Developed by BSCS Students at North Negros College.">
+
+  <!-- CSS Stylesheet -->
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="website.css">
+
+  <!-- Preconnect Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;800;900&family=Rajdhani:wght@500;600;700&family=Outfit:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap"
+    rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- AAA PRELOADER SCREEN -->
+  <div id="preloader" class="preloader">
+    <div class="preloader-content">
+      <div class="preloader-logo">
+        <div class="preloader-icon-ring">
+          <div class="ring-pulse"></div>
+          <img src="images/logo.png" alt="CONVENIRE Logo" class="logo-symbol-img">
+        </div>
+        <h2 class="preloader-title">CONVENIRE</h2>
+      </div>
+      <div class="preloader-bar-wrapper">
+        <div id="preloaderBar" class="preloader-bar-fill"></div>
+      </div>
+      <div class="preloader-info">
+        <span class="preloader-status" id="preloaderStatus">INITIALIZING HARDWARE ENGINE...</span>
+        <span class="preloader-percent" id="preloaderPercent">0%</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOM GLOWING NEON CURSOR -->
+  <div id="cursorDot" class="cursor-dot"></div>
+  <div id="cursorRing" class="cursor-ring"></div>
+
+  <!-- CINEMATIC MULTI-LAYER GAMING BACKGROUND -->
+  <div class="live-video-bg">
+    <img id="bgImageCircuit" class="bg-layer active" src="images/convenire-circuit.png"
+      alt="Futuristic Neon Circuit Hardware Wallpaper">
+    <img id="bgImagePuzzle" class="bg-layer" src="images/convenire-puzzle.png"
+      alt="3D Holographic Hardware Puzzle Grid Wallpaper">
+    <img id="bgImageSetup" class="bg-layer" src="images/gaming-setup.png" alt="Live Gaming Desktop Setup Wallpaper">
+
+    <video autoplay muted loop playsinline id="bgVideo">
+      <source src="../game/video/background-video.mp4" type="video/mp4">
+    </video>
+
+    <div class="rgb-light-pulse"></div>
+    <div class="scanlines-overlay"></div>
+  </div>
+
+  <!-- AMBIENT PARTICLES & GRID CANVAS LAYER -->
+  <canvas id="bgCanvas"></canvas>
+  <div class="overlay"></div>
+
+  <!-- SIDE VERTICAL DOTS NAVIGATOR -->
+  <div id="sideDotsNav" class="side-dots-nav">
+    <div class="side-dot-item active" data-section="home">
+      <span class="side-dot-tooltip">01. Home</span>
+    </div>
+    <div class="side-dot-item" data-section="story">
+      <span class="side-dot-tooltip">02. Story</span>
+    </div>
+    <div class="side-dot-item" data-section="gameplay">
+      <span class="side-dot-tooltip">03. Gameplay</span>
+    </div>
+    <div class="side-dot-item" data-section="features">
+      <span class="side-dot-tooltip">04. Features</span>
+    </div>
+    <div class="side-dot-item" data-section="tutorial">
+      <span class="side-dot-tooltip">05. Tutorial</span>
+    </div>
+    <div class="side-dot-item" data-section="sdlc">
+      <span class="side-dot-tooltip">06. Agile SDLC</span>
+    </div>
+    <div class="side-dot-item" data-section="techstack">
+      <span class="side-dot-tooltip">07. Tech Stack</span>
+    </div>
+    <div class="side-dot-item" data-section="developers">
+      <span class="side-dot-tooltip">08. Developers</span>
+    </div>
+  </div>
+
+  <!-- NAVBAR -->
+  <nav id="navbar">
+    <a href="#home" class="nav-brand">
+      <div class="nav-brand-icon">
+        <img src="images/logo.png" alt="CONVENIRE Logo" class="nav-logo-img">
+      </div>
+      <h2>CONVENIRE</h2>
+    </a>
+
+    <ul id="navMenu">
+      <li><a href="#home" class="active">Home</a></li>
+      <li><a href="#story">Story</a></li>
+      <li><a href="#gameplay">Gameplay</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#tutorial">Tutorial</a></li>
+      <li><a href="#sdlc">SDLC</a></li>
+      <li><a href="#techstack">Tech Stack</a></li>
+      <li><a href="#developers">Developers</a></li>
+    </ul>
+
+    <div class="nav-actions">
+      <a href="../game/index.html" class="btn btn-nav-cta" id="playNowNavBtn">
+        <svg class="btn-gamepad-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+          <path
+            d="M21 6H3c-1.1 0-2 .9-2 2v8c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-10 7H9v2H7v-2H5v-2h2V9h2v2h2v2zm4.5 1c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm3-3c-.83 0-1.5-.67-1.5-1.5S17.67 8 18.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z" />
+        </svg>
+        <span>PLAY GAME</span>
+      </a>
+      <button id="mobileToggle" class="mobile-toggle" aria-label="Toggle menu">☰</button>
+    </div>
+  </nav>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="home">
+    <div class="hud-corner-tl">[ 01/08 HERO.SYS ]</div>
+    <div class="hud-corner-br">[ SYSTEM ACTIVE ]</div>
+
+    <div class="hero-split-wrapper">
+      <!-- LEFT COLUMN: TEXT & CTA -->
+      <div class="hero-left-content">
+        <div class="hero-cyber-badge reveal-on-scroll">
+          <span class="cyber-brackets">&lt;&lt;&lt;</span>
+          <span class="badge-text">THE ULTIMATE PC HARDWARE PUZZLE</span>
+          <span class="cyber-brackets">&gt;&gt;&gt;</span>
+        </div>
+
+        <h1 class="hero-title reveal-on-scroll reveal-delay-1">
+          MASTER<br>
+          COMPUTER<br>
+          <span class="glow-text-cyan">HARDWARE</span><br>
+          <span class="glow-text-blue">IN CONVENIRE</span>
+        </h1>
+
+        <p class="hero-subtitle reveal-on-scroll reveal-delay-2">
+          An immersive 2D puzzle simulator where players identify, assemble, troubleshoot, and query high-performance PC
+          components across interactive levels.
+        </p>
+
+        <div class="hero-buttons reveal-on-scroll reveal-delay-2">
+          <a href="../game/index.html" class="btn-hero-cyber" id="heroPlayBtn">
+            <span>PLAY GAME</span>
+            <svg class="btn-arrow-icon" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor"
+              stroke-width="2.5">
+              <path d="M9 18l6-6-6-6" />
+            </svg>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: 3D FLOATING HARDWARE PUZZLE GRAPHIC -->
+      <div class="hero-right-visual reveal-on-scroll reveal-delay-1">
+        <div class="hero-puzzle-container">
+          <div class="hologram-pedestal">
+            <div class="pedestal-ring-pulse"></div>
+            <div class="pedestal-light-beam"></div>
+          </div>
+          <img src="images/board.png" alt="3D Computer Hardware Puzzle Pedestal" class="hero-puzzle-img">
+        </div>
+      </div>
+    </div>
+
+    <!-- 4 FEATURE MODULE CARDS ROW -->
+    <div class="hero-feature-cards reveal-on-scroll reveal-delay-3">
+      <!-- CARD 1 -->
+      <div class="feature-cyber-card spotlight-card">
+        <div class="cyber-card-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+          </svg>
+        </div>
+        <div class="cyber-card-val">Gamified Education</div>
+        <div class="cyber-card-sub">EDUCATIONAL CURRICULUM</div>
+        <div class="cyber-card-desc">Aligned with BSCS & computer hardware fundamentals</div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- CARD 2 -->
+      <div class="feature-cyber-card spotlight-card">
+        <div class="cyber-card-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path
+              d="M19.439 7.85c-.049-.322.059-.648.289-.878l1.564-1.564a2.218 2.218 0 0 0-3.137-3.137l-1.564 1.564c-.23.23-.556.338-.878.289a4.423 4.423 0 0 0-4.757 1.874l-2.02 2.02A4.423 4.423 0 0 0 7.062 6.142c-.322-.049-.648.059-.878.289L4.62 7.995a2.218 2.218 0 0 0 3.137 3.137l1.564-1.564c.23-.23.556-.338.878-.289a4.42 4.42 0 0 0 4.757-1.874l2.02-2.02a4.42 4.42 0 0 0 2.463 2.465z" />
+          </svg>
+        </div>
+        <div class="cyber-card-val">Challenges</div>
+        <div class="cyber-card-sub">Motherboard, Back Panel, LAN </div>
+        <div class="cyber-card-desc">CPU, RAM, ROM, Motherboard, GPU, Storage & more</div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- CARD 3 -->
+      <div class="feature-cyber-card spotlight-card">
+        <div class="cyber-card-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 21h8m-4-4v4M6 4h12a2 2 0 0 1 2 2v3a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6V6a2 2 0 0 1 2-2z" />
+            <path d="M4 6H2a2 2 0 0 0-2 2v1a4 4 0 0 0 4 4h2m12-7h2a2 2 0 0 1 2 2v1a4 4 0 0 1-4 4h-2" />
+          </svg>
+        </div>
+        <div class="cyber-card-val">Puzzle Quiz Game</div>
+        <div class="cyber-card-sub">QUIZ AND REPAIR CHALLENGES</div>
+        <div class="cyber-card-desc">Test your knowledge by assembling hardware components</div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- CARD 4 -->
+      <div class="feature-cyber-card spotlight-card">
+        <div class="cyber-card-icon">
+          <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="#00f2fe" stroke-width="2"
+            stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 22h20M4 22V10M8 22V10M12 22V10M16 22V10M20 22V10M12 2L2 7h20L12 2z" />
+          </svg>
+        </div>
+        <div class="cyber-card-val">BSCS</div>
+        <div class="cyber-card-sub">NORTH NEGROS COLLEGE</div>
+        <div class="cyber-card-desc">Proudly designed for Computer Science students</div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+    </div>
+
+    <!-- SECTION DIVIDER HEADER -->
+    <div class="cyber-section-header reveal-on-scroll">
+      <div class="header-line"></div>
+      <h2 class="header-title">EXPLORE THE <span class="text-cyan-glow">GAMING ARENA</span></h2>
+      <div class="header-line"></div>
+    </div>
+
+  </section>
+
+  <!-- CINEMATIC 3D LORE ANIMATION VIDEO SECTION -->
+  <section id="story">
+    <div class="hud-corner-tl">[ 02/08 STORY.SYS ]</div>
+    <div class="hud-corner-br">[ 3D LORE MOVIE ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> The Origin Saga
+      </span>
+      <h2 class="section-title">The <span class="gradient-text">Founding Myth</span></h2>
+      <p class="section-desc">
+        Watch the interactive 3D animated origin lore created for Computer Science students and hardware builders.
+      </p>
+    </div>
+
+    <!-- STORY VIDEO CONTAINER -->
+    <div class="story-video-container reveal-on-scroll reveal-delay-1 spotlight-card">
+      <!-- 5-CHAPTER TIMELINE TABS -->
+      <div class="story-chapter-tabs">
+        <button class="chapter-tab-btn active" data-chapter="0">I. The Fragmentatio</button>
+        <button class="chapter-tab-btn" data-chapter="1">II. The Assembler</button>
+        <button class="chapter-tab-btn" data-chapter="2">III. The Convenires</button>
+        <button class="chapter-tab-btn" data-chapter="3">IV. The Assembly Race</button>
+        <button class="chapter-tab-btn" data-chapter="4">V. End The Silence</button>
+      </div>
+
+      <div class="story-video-grid">
+        <!-- 3D LORE ANIMATION CANVAS VIEWPORT -->
+        <div class="story-canvas-frame">
+          <canvas id="storyLoreVideoCanvas" width="560" height="380"></canvas>
+          <div class="story-canvas-hud">
+            <span id="storyChapterBadge" class="chapter-hud-badge">CHAPTER I / V: THE FRAGMENTATION</span>
+            <span id="storyFpsCounter" class="hud-fps-tag">60.0 FPS</span>
+          </div>
+
+          <div class="story-playback-bar">
+            <div id="storyTimelineProgress" class="timeline-fill-bar" style="width: 20%;"></div>
+          </div>
+        </div>
+
+        <!-- SUBTITLE NARRATION & CONTROLS BOX -->
+        <div class="story-narration-box">
+          <div class="narration-header">
+            <span class="narration-chapter-tag" id="narrativeChapterTag">AGE OF THE SILENCE</span>
+            <h3 id="narrativeTitle" style="font-size: 1.25rem; color: var(--primary-cyan);">Chapter I: The Fragmentation
+            </h3>
+          </div>
+
+          <div class="narration-body">
+            <p id="narrativeText" class="typewriter-text">
+              Long before the first motherboard hummed to life, there was only the Fragmentation — a scattering of
+              components across the digital wastes: shattered CPUs, corrupted RAM shards, GPUs half-buried in silicon
+              dust. No machine could run. No system could think. The world called this age the Silence.
+            </p>
+          </div>
+
+          <div class="narration-controls-footer">
+            <button id="lorePlayPauseBtn" class="btn btn-primary btn-sm">
+              ▶ Auto-Play Lore Movie
+            </button>
+            <button id="loreResetBtn" class="btn btn-secondary btn-sm">
+              🔄 Restart Story
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GAMEPLAY SECTION -->
+  <section id="gameplay">
+    <div class="hud-corner-tl">[ 03/08 GAMEPLAY.SYS ]</div>
+    <div class="hud-corner-br">[ PUZZLE MECHANICS ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Core Mechanics
+      </span>
+      <h2 class="section-title">Exciting <span class="gradient-text">Gameplay</span></h2>
+      <p class="section-desc">
+        Progress through progressive puzzle stages engineered to test your hardware knowledge.
+      </p>
+    </div>
+
+    <div class="cards-grid">
+      <!-- GAMEPLAY CARD 1 -->
+      <div class="card spotlight-card gameplay-card reveal-on-scroll reveal-delay-1">
+        <div class="card-top-glow"></div>
+        <div class="card-scan-line"></div>
+        <div class="card-badge">STAGE MODE 01</div>
+        <div class="card-icon-wrapper">
+          <span class="icon-emoji">🧩</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <h3>Puzzle Assembly Levels</h3>
+        <p>Complete challenging hardware assembly puzzles where you match real PC components to their exact socket
+          positions.</p>
+        <div class="card-stat-footer">
+          <span class="stat-tag">50+ STAGES</span>
+          <a href="../game/index.html" class="card-arrow">START PUZZLE ➔</a>
+        </div>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- GAMEPLAY CARD 2 -->
+      <div class="card spotlight-card gameplay-card reveal-on-scroll reveal-delay-2">
+        <div class="card-top-glow"></div>
+        <div class="card-scan-line"></div>
+        <div class="card-badge">INSPECTION MODE 02</div>
+        <div class="card-icon-wrapper">
+          <span class="icon-emoji">💻</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <h3>Hardware Challenges</h3>
+        <p>Memorize every computer component, socket type, expansion slot, and power cable through interactive 3D visual
+          aids.</p>
+        <div class="card-stat-footer">
+          <span class="stat-tag">REAL-TIME 3D</span>
+          <a href="../game/index.html" class="card-arrow">EXPLORE 3D ➔</a>
+        </div>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- GAMEPLAY CARD 3 -->
+      <div class="card spotlight-card gameplay-card reveal-on-scroll reveal-delay-3">
+        <div class="card-top-glow"></div>
+        <div class="card-scan-line"></div>
+        <div class="card-badge">RANKING MODE 03</div>
+        <div class="card-icon-wrapper">
+          <span class="icon-emoji">🏆</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <h3>Earn Scores & Mastery Skills</h3>
+        <p>Unlock achievements and earn scores ratings after every level based on assembly accuracy and completion
+          speed.</p>
+        <div class="card-stat-footer">
+          <span class="stat-tag">LEADERBOARDS</span>
+          <a href="../game/index.html" class="card-arrow">VIEW RANKS ➔</a>
+        </div>
+        <div class="card-hover-border"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES SECTION -->s
+  <section id="features">
+    <div class="hud-corner-tl">[ 04/08 FEATURES.SYS ]</div>
+    <div class="hud-corner-br">[ CURRICULUM READY ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Game Features
+      </span>
+      <h2 class="section-title">Built For <span class="gradient-purple">Learners</span></h2>
+      <p class="section-desc">
+        Interactive educational features designed for students and hardware enthusiasts.
+      </p>
+    </div>
+
+    <div class="features-grid">
+      <!-- FEATURE CARD 1 -->
+      <div class="feature-box spotlight-card reveal-on-scroll reveal-delay-1">
+        <div class="feature-top-glow"></div>
+        <div class="feature-scan-line"></div>
+        <div class="feature-badge">INTERACTIVE</div>
+        <div class="feature-icon-wrapper">
+          <span class="icon-emoji">🧩</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <div class="feature-text">
+          <h3>Puzzle Challenges</h3>
+          <p>Drag and drop hardware components into their realistic slot locations with instant audio-visual feedback.
+          </p>
+          <div class="feature-footer">
+            <div class="feature-progress-bar"><span class="feature-progress-fill p-1"></span></div>
+            <span class="feature-arrow">LEARN MORE ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE CARD 2 -->
+      <div class="feature-box spotlight-card reveal-on-scroll reveal-delay-1">
+        <div class="feature-top-glow"></div>
+        <div class="feature-scan-line"></div>
+        <div class="feature-badge">KNOWLEDGE</div>
+        <div class="feature-icon-wrapper">
+          <span class="icon-emoji">💻</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <div class="feature-text">
+          <h3>Hardware Identification</h3>
+          <p>Learn real component specifications, motherboard form factors, pin counts, and expansion bus functions.</p>
+          <div class="feature-footer">
+            <div class="feature-progress-bar"><span class="feature-progress-fill p-2"></span></div>
+            <span class="feature-arrow">EXPLORE SPECS ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE CARD 3 -->
+      <div class="feature-box spotlight-card reveal-on-scroll reveal-delay-2">
+        <div class="feature-top-glow"></div>
+        <div class="feature-scan-line"></div>
+        <div class="feature-badge">COMPETITIVE</div>
+        <div class="feature-icon-wrapper">
+          <span class="icon-emoji">🏆</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <div class="feature-text">
+          <h3>Achievement System</h3>
+          <p>Track your high scores, earn 3-star assembly badges, and compete with classmates on global leaderboards.
+          </p>
+          <div class="feature-footer">
+            <div class="feature-progress-bar"><span class="feature-progress-fill p-3"></span></div>
+            <span class="feature-arrow">VIEW RANKS ➔</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- FEATURE CARD 4 -->
+      <div class="feature-box spotlight-card reveal-on-scroll reveal-delay-2">
+        <div class="feature-top-glow"></div>
+        <div class="feature-scan-line"></div>
+        <div class="feature-badge">CURRICULUM READY</div>
+        <div class="feature-icon-wrapper">
+          <span class="icon-emoji">📚</span>
+          <span class="icon-pulse-ring"></span>
+        </div>
+        <div class="feature-text">
+          <h3>Educational Gameplay</h3>
+          <p>Aligned with TESDA Computer Hardware Servicing NC II standards and Computer Science lab curriculums.</p>
+          <div class="feature-footer">
+            <div class="feature-progress-bar"><span class="feature-progress-fill p-4"></span></div>
+            <span class="feature-arrow">SYLLABUS ➔</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <!-- TUTORIAL SECTION -->
+  <section id="tutorial">
+    <div class="hud-corner-tl">[ 05/08 TUTORIAL.SYS ]</div>
+    <div class="hud-corner-br">[ VIDEO THEATRE & ACADEMY ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Interactive Field Guide
+      </span>
+      <h2 class="section-title">How To Play <span class="gradient-text">CONVENIRE</span></h2>
+      <p class="section-desc">
+        Watch the interactive gameplay tutorial video demonstrating Stage 1, Stage 2, and Stage 3 with realistic hand
+        simulations and diagnostic telemetry.
+      </p>
+    </div>
+
+    <!-- CURRICULUM & COMPETENCY BANNER -->
+    <div class="tutorial-curriculum-banner reveal-on-scroll">
+      <div class="banner-badge-group">
+        <span class="curr-pill"><span class="curr-dot"></span> BSCS COMPUTER ARCHITECTURE</span>
+        <span class="curr-pill"><span class="curr-dot"></span> TESDA CSS NC II ALIGNED</span>
+        <span class="curr-pill"><span class="curr-dot"></span> ZERO HARDWARE DAMAGE RISK</span>
+      </div>
+      <div class="banner-body">
+        <div class="banner-icon-box">🎓</div>
+        <div class="banner-text">
+          <h4>Academic & Industry Practical Training Standard</h4>
+          <p>
+            CONVENIRE bridges theoretical hardware architecture with hands-on spatial assembly. Students master socket
+            pinouts, color-coded rear I/O connectivity, and Cat6 network cable crimping under simulated real-world
+            conditions with instantaneous audio-visual telemetry.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- INTERACTIVE TUTORIAL VIDEO SIMULATOR THEATRE (STAGES 1, 2, 3) -->
+    <!-- ============================================================ -->
+    <div class="tutorial-video-theatre spotlight-card reveal-on-scroll">
+      <!-- THEATRE STAGE SELECTOR TABS -->
+      <div class="theatre-stage-tabs">
+        <button class="theatre-tab-btn active" data-stage="1" id="theatreBtnStage1">
+          <span class="theatre-tab-num">STAGE 01</span>
+          <span class="theatre-tab-name">🖥️ Motherboard Assembly</span>
+        </button>
+        <button class="theatre-tab-btn" data-stage="2" id="theatreBtnStage2">
+          <span class="theatre-tab-num">STAGE 02</span>
+          <span class="theatre-tab-name">🔌 Rear I/O Back Panel</span>
+        </button>
+        <button class="theatre-tab-btn" data-stage="3" id="theatreBtnStage3">
+          <span class="theatre-tab-num">STAGE 03</span>
+          <span class="theatre-tab-name">✂️ RJ-45 LAN Crimping</span>
+        </button>
+      </div>
+
+      <!-- MAIN VIDEO & SIMULATION ARENA -->
+      <div class="theatre-viewport-grid">
+        <!-- LEFT: VIDEO SCREEN WITH LIVE HAND SIMULATION OVERLAY -->
+        <div class="theatre-video-frame" id="theatreVideoFrame">
+          <!-- Background Gameplay Video Loop -->
+          <video id="theatreBgVideo" class="theatre-bg-video" autoplay loop muted playsinline>
+            <source src="../game/video/vidzzzz.mp4" type="video/mp4">
+          </video>
+          <div class="theatre-video-overlay"></div>
+
+          <!-- Interactive Simulated Board & Component Stage Viewport -->
+          <div class="theatre-sim-stage" id="theatreSimStage">
+
+            <!-- STAGE 1 SIMULATION LAYER -->
+            <div class="sim-stage-layer active" id="simLayerStage1">
+              <div class="sim-inventory-dock">
+                <div class="sim-comp" id="simCompCpu" data-name="Desktop CPU (Core i9)">
+                  <img src="images/cpu.png" alt="Desktop CPU">
+                  <span>Core i9</span>
+                </div>
+                <div class="sim-comp" id="simCompRam" data-name="DDR5 RAM DIMM">
+                  <img src="images/RAM.png" alt="DDR5 RAM">
+                  <span>DDR5 RAM</span>
+                </div>
+                <div class="sim-comp" id="simCompGpu" data-name="RTX 4090 GPU">
+                  <img src="images/GPU.png" alt="RTX 4090 GPU">
+                  <span>RTX GPU</span>
+                </div>
+              </div>
+
+              <div class="sim-board-wrapper">
+                <img src="images/map.png" alt="Motherboard PCB Layout" class="sim-board-img">
+                <div class="sim-socket-target" id="simSocketCpu" title="LGA-1700 CPU Socket">
+                  <span class="socket-label">CPU LGA-1700</span>
+                </div>
+                <div class="sim-socket-target" id="simSocketRam" title="DDR5 DIMM Slot">
+                  <span class="socket-label">DIMM_A2</span>
+                </div>
+                <div class="sim-socket-target" id="simSocketGpu" title="PCIe 5.0 x16 Slot">
+                  <span class="socket-label">PCIe x16</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- STAGE 2 SIMULATION LAYER -->
+            <div class="sim-stage-layer" id="simLayerStage2">
+              <div class="sim-inventory-dock">
+                <div class="sim-comp" id="simCompUsb" data-name="Dual USB 2.0">
+                  <img src="images/usb.png" alt="USB Ports">
+                  <span>USB 2.0</span>
+                </div>
+                <div class="sim-comp" id="simCompHdmi" data-name="DVI / HDMI Video">
+                  <img src="images/hdmi.png" alt="HDMI Connector">
+                  <span>HDMI</span>
+                </div>
+                <div class="sim-comp" id="simCompEth" data-name="Gigabit Ethernet">
+                  <img src="images/ethernet.png" alt="Ethernet Connector">
+                  <span>LAN RJ-45</span>
+                </div>
+              </div>
+
+              <div class="sim-board-wrapper">
+                <img src="images/bp.png" alt="PC Rear I/O Back Panel Shield" class="sim-board-img sim-board-io">
+                <div class="sim-socket-target" id="simSocketUsb" title="Dual USB Ports">
+                  <span class="socket-label">USB PORTS</span>
+                </div>
+                <div class="sim-socket-target" id="simSocketHdmi" title="HDMI Video Output">
+                  <span class="socket-label">HDMI VIDEO</span>
+                </div>
+                <div class="sim-socket-target" id="simSocketEth" title="Gigabit LAN Port">
+                  <span class="socket-label">GIGABIT LAN</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- STAGE 3 SIMULATION LAYER -->
+            <div class="sim-stage-layer" id="simLayerStage3">
+              <div class="sim-stage3-workstation">
+                <!-- Outer Jacket Stripping Dock -->
+                <div class="sim-jacket-dock" id="simJacketDock">
+                  <div class="sim-jacket-btn-box" id="simStripBtnVisual">
+                    <span class="sim-strip-icon">✂️</span>
+                    <span class="sim-strip-label" id="simStripLabel">STRIP CAT6 JACKET [J]</span>
+                  </div>
+                  <div class="sim-cable-sheath-graphic" id="simCableSheathGraphic">
+                    <div class="sheath-outer" id="sheathOuter">
+                      <span class="sheath-status-text" id="sheathStatusText">JACKET INTACT 🔒</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- RJ-45 Modular Plug Chamber -->
+                <div class="sim-rj45-housing" id="simRj45Housing">
+                  <div class="sim-rj45-label">🔌 CLEAR RJ-45 MODULAR PLUG (TOP VIEW)</div>
+                  <div class="sim-rj45-gold-teeth">
+                    <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span><span>7</span><span>8</span>
+                  </div>
+                  <div class="sim-rj45-channels" id="simRj45Channels">
+                    <div class="sim-wire-channel" id="wireSlot0" title="Pin 1: White-Green">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot1" title="Pin 2: Green">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot2" title="Pin 3: White-Orange">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot3" title="Pin 4: Blue">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot4" title="Pin 5: White-Blue">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot5" title="Pin 6: Orange">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot6" title="Pin 7: White-Brown">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                    <div class="sim-wire-channel" id="wireSlot7" title="Pin 8: Brown">
+                      <div class="channel-wire-fill"></div>
+                    </div>
+                  </div>
+                  <!-- Squeeze Crimp Tool Button -->
+                  <div class="sim-crimp-action-box" id="simCrimpActionBox">
+                    <span class="crimp-tool-icon">🔧</span>
+                    <span class="crimp-tool-text" id="simCrimpToolText">SQUEEZE CRIMP TOOL [SPACE]</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Realistic Photorealistic Animated Hand Element -->
+            <div class="theatre-animated-hand frame-hover" id="theatreHand">
+              <img src="images/hands/hand-hover.png" alt="Realistic Hand Tutorial" class="theatre-hand-photo-sprite"
+                id="theatreHandPhoto">
+              <div class="theatre-held-item" id="theatreHeldItem"></div>
+            </div>
+
+          </div>
+
+          <!-- Video Player HUD & Timeline Scrubber Bar -->
+          <div class="theatre-hud-overlay">
+            <div class="theatre-step-banner" id="theatreStepBanner">
+              <span class="hud-hand-icon">✋</span>
+              <span id="theatreBannerText">DEMONSTRATION: Click Play Video Tutorial or Drag & Drop yourself!</span>
+            </div>
+            <div class="theatre-progress-bar-wrapper">
+              <div class="theatre-progress-bar-fill" id="theatreProgressFill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: TUTORIAL NARRATION & VIDEO CONTROLS -->
+        <div class="theatre-controls-panel">
+          <!-- INTERACTIVE MODE SWITCHER -->
+          <div class="theatre-mode-toggle-group">
+            <button class="theatre-mode-btn active" id="theatreModeAuto" title="Automated Video Demonstration">
+              <span>🤖</span> Auto Demo Video
+            </button>
+            <button class="theatre-mode-btn" id="theatreModeInteractive" title="Interactive Realistic Drag & Drop">
+              <span>✋</span> Drag & Drop Yourself
+            </button>
+          </div>
+
+          <div class="theatre-panel-kicker" id="theatreStageKicker">STAGE 1 TUTORIAL VIDEO</div>
+          <h3 class="theatre-stage-title" id="theatreStageTitle">Motherboard Hardware Assembly</h3>
+          <p class="theatre-stage-desc" id="theatreStageDesc">
+            Watch the realistic hand demonstrate how to pick components from the inventory rack and slide them into
+            their exact socket targets on the motherboard PCB, or switch to interactive mode to drag & drop them
+            yourself!
+          </p>
+
+          <div class="theatre-telemetry-box">
+            <div class="telem-row">
+              <span class="telem-label">CURRENT STEP:</span>
+              <span class="telem-val" id="theatreActionVal">Ready to start</span>
+            </div>
+            <div class="telem-row">
+              <span class="telem-label">TARGET HARDWARE:</span>
+              <span class="telem-val" id="theatreTargetVal">LGA-1700 / DDR5 / PCIe 5.0</span>
+            </div>
+            <div class="telem-row">
+              <span class="telem-label">DIAGNOSTIC STATUS:</span>
+              <span class="telem-val highlight" id="theatreStatusVal">AWAITING VIDEO PLAY</span>
+            </div>
+          </div>
+
+          <!-- VIDEO CONTROLLER BUTTONS -->
+          <div class="theatre-action-buttons">
+            <button class="btn btn-primary btn-theatre-main" id="theatrePlayBtn">
+              <span id="theatrePlayIcon">▶</span>
+              <span id="theatrePlayText">Play Video Tutorial</span>
+            </button>
+            <button class="btn btn-secondary" id="theatrePrevBtn" title="Previous Step">⏮ Prev</button>
+            <button class="btn btn-secondary" id="theatreNextBtn" title="Next Step">Next ⏭</button>
+            <button class="btn btn-secondary" id="theatreRestartBtn" title="Restart Tutorial">🔄 Replay</button>
+          </div>
+
+          <!-- DIRECT STAGE PLAY LINK -->
+          <a href="../game/stage1.html" class="theatre-direct-link" id="theatreLaunchStageBtn">
+            <span>PLAY THIS STAGE IN GAME</span>
+            <span class="arrow-icon">➔</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- SDLC AGILE METHODOLOGY SECTION -->
+  <!-- ============================================================ -->
+  <section id="sdlc">
+    <div class="hud-corner-tl">[ 06/08 SDLC.SYS ]</div>
+    <div class="hud-corner-br">[ AGILE SPRINT FRAMEWORK ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Software Engineering Methodology
+      </span>
+      <h2 class="section-title">SDLC Model: <span class="gradient-cyan">Agile Framework</span></h2>
+      <p class="section-desc">
+        How the BSCS engineering team at North Negros College implemented an iterative, sprint-based Agile methodology to design, calibrate, and deploy the CONVENIRE educational simulator.
+      </p>
+    </div>
+
+    <!-- AGILE TELEMETRY METRIC CARDS -->
+    <div class="sdlc-metrics-grid reveal-on-scroll reveal-delay-1">
+      <div class="sdlc-stat-card spotlight-card">
+        <div class="sdlc-stat-icon">⚡</div>
+        <div class="sdlc-stat-val">2-Week Sprints</div>
+        <div class="sdlc-stat-label">ITERATIVE CADENCE</div>
+        <p class="sdlc-stat-sub">Bi-weekly development cycles delivering continuous playable builds and peer testing.</p>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <div class="sdlc-stat-card spotlight-card">
+        <div class="sdlc-stat-icon">🔄</div>
+        <div class="sdlc-stat-val">6 Lifecycle Phases</div>
+        <div class="sdlc-stat-label">CONTINUOUS SPRINT LOOP</div>
+        <p class="sdlc-stat-sub">From user story backlog grooming to automated deployment and retrospective tuning.</p>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <div class="sdlc-stat-card spotlight-card">
+        <div class="sdlc-stat-icon">🎯</div>
+        <div class="sdlc-stat-val">Calibrated</div>
+        <div class="sdlc-stat-label">DROP-ZONE PRECISION</div>
+        <p class="sdlc-stat-sub">Empirical coordinate testing ensuring socket tolerances and pin alignments feel realistic.</p>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <div class="sdlc-stat-card spotlight-card">
+        <div class="sdlc-stat-icon">🎓</div>
+        <div class="sdlc-stat-val">BSCS Aligned</div>
+        <div class="sdlc-stat-label">CURRICULUM CO-DESIGN</div>
+        <p class="sdlc-stat-sub">Direct instructor reviews ensuring accurate pinouts, bus specs, and diagnostic accuracy.</p>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+    </div>
+
+    <!-- INTERACTIVE TABBED SDLC EXPLORER -->
+    <div class="sdlc-explorer-container spotlight-card reveal-on-scroll reveal-delay-2">
+      <!-- TABS NAVIGATION -->
+      <div class="sdlc-tabs-nav">
+        <button class="sdlc-tab-btn active" data-tab="why-agile">
+          <span class="tab-icon">🎯</span>
+          <span class="tab-label">Why We Chose Agile</span>
+        </button>
+        <button class="sdlc-tab-btn" data-tab="phases">
+          <span class="tab-icon">🔄</span>
+          <span class="tab-label">6 Sprint Phases</span>
+        </button>
+        <button class="sdlc-tab-btn" data-tab="comparison">
+          <span class="tab-icon">⚖️</span>
+          <span class="tab-label">Agile vs. Waterfall</span>
+        </button>
+        <button class="sdlc-tab-btn" data-tab="roadmap">
+          <span class="tab-icon">🗺️</span>
+          <span class="tab-label">Project Sprints (1-5)</span>
+        </button>
+      </div>
+
+      <!-- TAB PANE 1: WHY WE CHOSE AGILE (PURPOSE & JUSTIFICATION) -->
+      <div class="sdlc-tab-pane active" id="pane-why-agile">
+        <div class="sdlc-pane-header">
+          <div class="pane-badge">PURPOSE & STRATEGIC JUSTIFICATION</div>
+          <h3 class="pane-title">Why the Agile Model Was Selected for CONVENIRE</h3>
+          <p class="pane-desc">
+            Developing an educational hardware assembly puzzle simulator introduces unique technical and pedagogical challenges that traditional linear software models (like Waterfall) fail to address. Agile's iterative and flexible nature proved essential for the following four fundamental reasons:
+          </p>
+        </div>
+
+        <div class="sdlc-pillars-grid">
+          <!-- Pillar 1 -->
+          <div class="sdlc-pillar-card spotlight-card">
+            <div class="pillar-num">01</div>
+            <div class="pillar-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="22" y1="12" x2="18" y2="12"></line>
+                <line x1="6" y1="12" x2="2" y2="12"></line>
+                <line x1="12" y1="6" x2="12" y2="2"></line>
+                <line x1="12" y1="22" x2="12" y2="18"></line>
+              </svg>
+            </div>
+            <h4>Iterative Mechanics & Hitbox Calibration</h4>
+            <p class="pillar-highlight">Empirical Drop-Zone Tuning vs. Theoretical Specs</p>
+            <p class="pillar-text">
+              Physical hardware assembly requires pixel-perfect spatial precision. Socket coordinates (e.g. LGA-1700 CPU, DDR5 dual-channel slots, PCIe x16 latches) cannot be finalized purely on paper. Agile allowed our team to code quick prototypes, test drop-zone tolerances using our dedicated <code>debug_dropzones.html</code> calibration tool, and iteratively fine-tune coordinates across multiple screen resolutions.
+            </p>
+            <div class="pillar-tag">Tactile Game Feel</div>
+          </div>
+
+          <!-- Pillar 2 -->
+          <div class="sdlc-pillar-card spotlight-card">
+            <div class="pillar-num">02</div>
+            <div class="pillar-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+            </div>
+            <h4>Student & Instructor Feedback Integration</h4>
+            <p class="pillar-highlight">Continuous Co-Design with Real Learners</p>
+            <p class="pillar-text">
+              CONVENIRE is an educational tool for BSCS students at North Negros College. Rather than waiting for a post-launch evaluation, Agile enabled our team to conduct sprint reviews at the end of each stage. Feedback from computer architecture professors and peer students led to immediate improvements, such as adding visual orientation notches, dual-channel RAM pairing rules, and Cat6 crimping standards.
+            </p>
+            <div class="pillar-tag">Pedagogical Accuracy</div>
+          </div>
+
+          <!-- Pillar 3 -->
+          <div class="sdlc-pillar-card spotlight-card">
+            <div class="pillar-num">03</div>
+            <div class="pillar-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+              </svg>
+            </div>
+            <h4>Early Working Vertical Slices & Risk Reduction</h4>
+            <p class="pillar-highlight">Playable Prototypes Delivered from Sprint 2</p>
+            <p class="pillar-text">
+              In linear models, integration occurs late in the project timeline, creating high risk for game-breaking bugs. By utilizing Agile, our team delivered a fully playable vertical slice of Stage 1 (Motherboard Assembly) in Sprint 2. This proved the viability of our 2D HTML5 canvas, drag-and-drop mechanics, and Web Audio synthesis early, eliminating technical debt and architectural risks.
+            </p>
+            <div class="pillar-tag">De-risked Architecture</div>
+          </div>
+
+          <!-- Pillar 4 -->
+          <div class="sdlc-pillar-card spotlight-card">
+            <div class="pillar-num">04</div>
+            <div class="pillar-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--primary-cyan)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <h4>Cross-Functional Team Velocity & Synergy</h4>
+            <p class="pillar-highlight">Parallel Development for 5 Student Specialists</p>
+            <p class="pillar-text">
+              Our 5-member team divided roles across Lead Architecture, UI/UX Visual Assets, Backend Systems, Interactive UI Components, and Database Engineering. Daily standup check-ins and sprint backlog grooming allowed artists to supply 3D hardware graphics while frontend engineers coded drop zones concurrently, maintaining high velocity without blocking one another.
+            </p>
+            <div class="pillar-tag">High Team Velocity</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANE 2: 6 SPRINT PHASES -->
+      <div class="sdlc-tab-pane" id="pane-phases">
+        <div class="sdlc-pane-header">
+          <div class="pane-badge">LIFECYCLE EXECUTION</div>
+          <h3 class="pane-title">The 6-Phase Agile Sprint Loop in CONVENIRE</h3>
+          <p class="pane-desc">
+            Each 2-week sprint cycle repeated this structured 6-phase engineering loop, transforming curriculum learning competencies into fully tested, playable game mechanics:
+          </p>
+        </div>
+
+        <div class="sdlc-phases-grid">
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 01</span>
+              <span class="phase-status">INPUT</span>
+            </div>
+            <div class="phase-title">Sprint Planning & Backlog Grooming</div>
+            <p class="phase-text">
+              The team decomposes educational goals into actionable user stories with explicit acceptance criteria. Example: <em>"As a player, I must correctly orient the CPU triangle notch before socket clamping."</em> Tasks are estimated and committed to the sprint backlog.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> Sprint Backlog & Story Points</div>
+          </div>
+
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 02</span>
+              <span class="phase-status">DESIGN</span>
+            </div>
+            <div class="phase-title">Component UI/UX & Hardware Modeling</div>
+            <p class="phase-text">
+              UI designers craft cyberpunk HUD interfaces, neon glow states, and prepare high-resolution component sprites (CPU, GPU, RAM, cables). Layout coordinates are measured against real ATX motherboard standards for high authenticity.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> UI Wireframes & 2D/3D Assets</div>
+          </div>
+
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 03</span>
+              <span class="phase-status">BUILD</span>
+            </div>
+            <div class="phase-title">Iterative Coding & Feature Engineering</div>
+            <p class="phase-text">
+              Engineers implement modular game logic: pointer drag-and-drop handlers, bounding-box hit tests, audio synthesis triggers (Web Audio API), score multipliers, and dynamic diagnostic feedback systems.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> Playable Feature Modules</div>
+          </div>
+
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 04</span>
+              <span class="phase-status">VERIFY</span>
+            </div>
+            <div class="phase-title">Empirical Calibration & Playtesting</div>
+            <p class="phase-text">
+              Rigorous quality assurance using calibration tools (such as <code>debug_dropzones.html</code>) to verify hitbox boundaries, snapping magnetic radii, browser responsiveness, and mobile touch support without regressions.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> Calibrated Drop-Zone Matrix</div>
+          </div>
+
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 05</span>
+              <span class="phase-status">EVALUATE</span>
+            </div>
+            <div class="phase-title">Sprint Review & Retrospectives</div>
+            <p class="phase-text">
+              Live demonstration of sprint increments to North Negros College CS faculty and peer learners. The team reviews what went well, identifies friction points, and adjusts gameplay difficulty or clarity for the next sprint.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> Stakeholder Feedback & Action Items</div>
+          </div>
+
+          <div class="sdlc-phase-card spotlight-card">
+            <div class="phase-badge-row">
+              <span class="phase-number">PHASE 06</span>
+              <span class="phase-status">RELEASE</span>
+            </div>
+            <div class="phase-title">Incremental Deployment & Staging</div>
+            <p class="phase-text">
+              The verified playable stage is integrated into the web release branch. Students can immediately access the new challenges online, verify their scores, and submit bug reports or usability suggestions.
+            </p>
+            <div class="phase-deliverable"><strong>Deliverable:</strong> Live Incremental Web Build</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB PANE 3: AGILE VS. WATERFALL -->
+      <div class="sdlc-tab-pane" id="pane-comparison">
+        <div class="sdlc-pane-header">
+          <div class="pane-badge">METHODOLOGY EVALUATION</div>
+          <h3 class="pane-title">Why Agile Triumphed Over the Waterfall Model</h3>
+          <p class="pane-desc">
+            A side-by-side comparative analysis demonstrating why traditional linear methodologies were unsuitable for our interactive educational puzzle game:
+          </p>
+        </div>
+
+        <div class="sdlc-comparison-table-wrapper">
+          <table class="sdlc-comparison-table">
+            <thead>
+              <tr>
+                <th>EVALUATION FACTOR</th>
+                <th class="col-agile">AGILE MODEL (CHOSEN)</th>
+                <th class="col-waterfall">WATERFALL MODEL (REJECTED)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Requirement Flexibility</strong></td>
+                <td><span class="badge-success">Highly Adaptive</span> — Incorporates instructor feedback and new hardware specs between sprints.</td>
+                <td><span class="badge-danger">Rigid</span> — Changes require formal rework of requirements, causing major schedule delays.</td>
+              </tr>
+              <tr>
+                <td><strong>Playable Increments</strong></td>
+                <td><span class="badge-success">Sprint 2 Working Slice</span> — Playable Motherboard stage available within weeks for real testing.</td>
+                <td><span class="badge-danger">Delayed to End</span> — Working game is only visible at the final phase; impossible to test early feel.</td>
+              </tr>
+              <tr>
+                <td><strong>Hitbox & Calibration Testing</strong></td>
+                <td><span class="badge-success">Continuous Every Sprint</span> — Empirical calibration of drop zones and physics in real time.</td>
+                <td><span class="badge-danger">Postponed to QA</span> — Misaligned hitboxes or confusing mechanics discovered too late to easily refactor.</td>
+              </tr>
+              <tr>
+                <td><strong>User & Student Feedback</strong></td>
+                <td><span class="badge-success">Continuous Sprint Demos</span> — BSCS students and professors test each stage progressively.</td>
+                <td><span class="badge-danger">Post-Delivery Only</span> — Feedback received only after deployment, risking poor educational adoption.</td>
+              </tr>
+              <tr>
+                <td><strong>Team Risk Management</strong></td>
+                <td><span class="badge-success">Iteratively De-risked</span> — Unknowns in canvas rendering and audio synthesis resolved early.</td>
+                <td><span class="badge-danger">High Risk</span> — Unverified technical assumptions compound into catastrophic integration bottlenecks.</td>
+              </tr>
+              <tr>
+                <td><strong>Team Structure</strong></td>
+                <td><span class="badge-success">Collaborative Synergy</span> — 5 student developers coordinate in parallel via daily standups.</td>
+                <td><span class="badge-danger">Sequential Silos</span> — Frontend waits for backend, designers idle while engineers code.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB PANE 4: CONVENIRE SPRINT ROADMAP -->
+      <div class="sdlc-tab-pane" id="pane-roadmap">
+        <div class="sdlc-pane-header">
+          <div class="pane-badge">CHRONOLOGICAL EXECUTION</div>
+          <h3 class="pane-title">CONVENIRE Sprint Execution Milestones</h3>
+          <p class="pane-desc">
+            How our 5 development sprints progressed from initial architectural spikes to a fully playable AAA educational simulator:
+          </p>
+        </div>
+
+        <div class="sdlc-roadmap-timeline">
+          <!-- Sprint 1 -->
+          <div class="sdlc-roadmap-item spotlight-card">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-meta">
+              <span class="roadmap-tag">SPRINT 01</span>
+              <span class="roadmap-dates">WEEKS 1–2</span>
+            </div>
+            <h4>Foundation & Hardware Architecture Spike</h4>
+            <p>Gathered BSCS hardware syllabus requirements. Established HTML5 Canvas boilerplate, 3D lore origin narrative, and developed preliminary 2D motherboard coordinate mapping.</p>
+            <div class="roadmap-deliverables">
+              <span class="deliv-badge">Core Engine Scaffold</span>
+              <span class="deliv-badge">Asset Styleguide</span>
+              <span class="deliv-badge">Story Scripting</span>
+            </div>
+          </div>
+
+          <!-- Sprint 2 -->
+          <div class="sdlc-roadmap-item spotlight-card">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-meta">
+              <span class="roadmap-tag">SPRINT 02</span>
+              <span class="roadmap-dates">WEEKS 3–4</span>
+            </div>
+            <h4>Stage 1: Motherboard Assembly & Drop-Zone Calibration</h4>
+            <p>Built drag-and-drop socket physics. Created the <code>debug_dropzones.html</code> calibration harness to calibrate LGA-1700 CPU, DDR5 RAM, PCIe GPU, SATA, and ATX power hitboxes.</p>
+            <div class="roadmap-deliverables">
+              <span class="deliv-badge">Motherboard Stage 1</span>
+              <span class="deliv-badge">Drop-Zone Calibrator</span>
+              <span class="deliv-badge">Audio SFX Engine</span>
+            </div>
+          </div>
+
+          <!-- Sprint 3 -->
+          <div class="sdlc-roadmap-item spotlight-card">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-meta">
+              <span class="roadmap-tag">SPRINT 03</span>
+              <span class="roadmap-dates">WEEKS 5–6</span>
+            </div>
+            <h4>Stage 2: Rear I/O Back Panel & Cable Routing</h4>
+            <p>Engineered color-coded rear motherboard port matching (HDMI, DisplayPort, USB 3.2, Audio jacks, Ethernet). Integrated power-on POST verification logic and timer scoring.</p>
+            <div class="roadmap-deliverables">
+              <span class="deliv-badge">Stage 2 Back Panel</span>
+              <span class="deliv-badge">POST BIOS Routine</span>
+              <span class="deliv-badge">Faculty Sprint Demo</span>
+            </div>
+          </div>
+
+          <!-- Sprint 4 -->
+          <div class="sdlc-roadmap-item spotlight-card">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-meta">
+              <span class="roadmap-tag">SPRINT 04</span>
+              <span class="roadmap-dates">WEEKS 7–8</span>
+            </div>
+            <h4>Stage 3: RJ-45 LAN Cable Crimping & Troubleshooting</h4>
+            <p>Implemented T568A/T568B color wire sequence challenges, ratcheting crimp mechanics, and diagnostic hardware quiz mini-games for BSCS hardware troubleshooting practice.</p>
+            <div class="roadmap-deliverables">
+              <span class="deliv-badge">Stage 3 LAN Crimping</span>
+              <span class="deliv-badge">Diagnostic Quiz</span>
+              <span class="deliv-badge">Student Usability Trials</span>
+            </div>
+          </div>
+
+          <!-- Sprint 5 -->
+          <div class="sdlc-roadmap-item spotlight-card">
+            <div class="roadmap-dot"></div>
+            <div class="roadmap-meta">
+              <span class="roadmap-tag">SPRINT 05</span>
+              <span class="roadmap-dates">WEEKS 9–10</span>
+            </div>
+            <h4>AAA Cyber Polish, Tutorial Theatre & Final Staging</h4>
+            <p>Added interactive video tutorial theatre with auto-pilot and drag-and-drop modes, dynamic neon HUD cursor, accessibility enhancements, performance profiling, and documentation.</p>
+            <div class="roadmap-deliverables">
+              <span class="deliv-badge">Interactive Tutorial</span>
+              <span class="deliv-badge">Cyber HUD Engine</span>
+              <span class="deliv-badge">Capstone Presentation</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================ -->
+  <!-- PROGRAMMING LANGUAGE DESIGN INTERFACE & TECH STACK SECTION -->
+  <!-- ============================================================ -->
+  <section id="techstack">
+    <div class="hud-corner-tl">[ 07/08 TECH.SYS ]</div>
+    <div class="hud-corner-br">[ FULL-STACK ENGINE ARCHITECTURE ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Game Engineering & Software Stack
+      </span>
+      <h2 class="section-title">Programming Language <span class="gradient-cyan">Design Interface</span></h2>
+      <p class="section-desc">
+        Explore the four foundational programming technologies engineered to build the CONVENIRE hardware simulator — combining semantic HTML5 spatial containers, cyber CSS3 glassmorphism & shaders, real-time ES6+ physics & Web Audio synthesis, and secure server-side PHP/MySQL REST services.
+      </p>
+    </div>
+
+    <!-- 4 CORE LANGUAGE TELEMETRY METRIC CARDS -->
+    <div class="tech-matrix-grid reveal-on-scroll reveal-delay-1">
+      <!-- HTML5 CARD -->
+      <div class="tech-matrix-card spotlight-card active" data-tech-target="html">
+        <div class="tech-card-header">
+          <div class="tech-icon-badge html-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 3h16l-1.5 15.5L12 21l-6.5-2.5L4 3z"/>
+              <path d="M7 7h10l-.5 4H8l.3 3h8.2l-.5 4-4 1.5-4-1.5-.2-2"/>
+            </svg>
+          </div>
+          <span class="tech-lang-chip html-chip">HTML5</span>
+        </div>
+        <h3 class="tech-card-title">Spatial DOM & Hardware Hierarchy</h3>
+        <p class="tech-card-desc">
+          Structured DOM blueprints defining motherboard PCB sockets, calibrated drop-zones, SVG wireframes, and accessible UI containers across Stages 1 through 3.
+        </p>
+        <div class="tech-card-footer">
+          <span class="tech-file-tag">📄 stage1.html</span>
+          <span class="tech-spec-tag">28+ Drop Targets</span>
+        </div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- CSS3 CARD -->
+      <div class="tech-matrix-card spotlight-card" data-tech-target="css">
+        <div class="tech-card-header">
+          <div class="tech-icon-badge css-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 3h16l-1.5 15.5L12 21l-6.5-2.5L4 3z"/>
+              <path d="M16.5 7.5H7.5l.4 4.5h8.2l-.6 6-3.5 1.2-3.5-1.2-.2-2.5"/>
+            </svg>
+          </div>
+          <span class="tech-lang-chip css-chip">CSS3</span>
+        </div>
+        <h3 class="tech-card-title">Cyber Visual Shaders & Glassmorphism</h3>
+        <p class="tech-card-desc">
+          High-performance visual stylesheets powering holographic neon glows, 60fps socket pulse animations, realistic dragging hand cursors, and responsive HUDs.
+        </p>
+        <div class="tech-card-footer">
+          <span class="tech-file-tag">🎨 stage1.css</span>
+          <span class="tech-spec-tag">2,800+ CSS Rules</span>
+        </div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- JAVASCRIPT CARD -->
+      <div class="tech-matrix-card spotlight-card" data-tech-target="js">
+        <div class="tech-card-header">
+          <div class="tech-icon-badge js-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="18" height="18" rx="2"/>
+              <path d="M8 17c.5.6 1.2 1 2 1 1.4 0 2-1 2-2.5V9"/>
+              <path d="M15 17c.8.6 1.7 1 2.5 1 1.4 0 2.5-.9 2.5-2.3 0-2.7-4-2.1-4-4.2 0-.8.7-1.5 1.8-1.5.8 0 1.6.3 2.2.8"/>
+            </svg>
+          </div>
+          <span class="tech-lang-chip js-chip">JAVASCRIPT</span>
+        </div>
+        <h3 class="tech-card-title">Realtime Game Physics & Web Audio</h3>
+        <p class="tech-card-desc">
+          Modular ES6+ engine driving Euclidean snap-distance detection, state machine stages, countdown scoring algorithms, and procedural synthesizer sound effects.
+        </p>
+        <div class="tech-card-footer">
+          <span class="tech-file-tag">⚡ stage1.js</span>
+          <span class="tech-spec-tag">Web Audio API</span>
+        </div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+
+      <!-- PHP CARD -->
+      <div class="tech-matrix-card spotlight-card" data-tech-target="php">
+        <div class="tech-card-header">
+          <div class="tech-icon-badge php-badge">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <ellipse cx="12" cy="12" rx="10" ry="7"/>
+              <path d="M7 14V10h2.5c1 0 1.5.5 1.5 1.5S10.5 13 9.5 13H7"/>
+              <path d="M13 14V10h2.5c1 0 1.5.5 1.5 1.5S16.5 13 15.5 13H13"/>
+            </svg>
+          </div>
+          <span class="tech-lang-chip php-chip">PHP & MySQL</span>
+        </div>
+        <h3 class="tech-card-title">Server REST API & Telemetry DB</h3>
+        <p class="tech-card-desc">
+          Backend services executing student authentication, secure session tokens, sanitized MySQL prepared statements for score logging, and the Teacher Dashboard.
+        </p>
+        <div class="tech-card-footer">
+          <span class="tech-file-tag">🔒 save_progress.php</span>
+          <span class="tech-spec-tag">Prepared SQL</span>
+        </div>
+        <div class="cyber-corner-tr"></div>
+        <div class="cyber-corner-bl"></div>
+      </div>
+    </div>
+
+    <!-- MAIN INTERACTIVE IDE & WORKBENCH STATION -->
+    <div class="tech-ide-station spotlight-card reveal-on-scroll reveal-delay-2" id="techIdeStation">
+      <!-- IDE WINDOW TITLEBAR -->
+      <div class="ide-titlebar">
+        <div class="ide-window-controls">
+          <span class="ide-dot dot-red"></span>
+          <span class="ide-dot dot-yellow"></span>
+          <span class="ide-dot dot-green"></span>
+        </div>
+
+        <!-- LANGUAGE SELECTOR TABS -->
+        <div class="ide-tabs-nav" role="tablist">
+          <button class="ide-tab-btn active" data-lang="html" role="tab" id="tabBtnHtml">
+            <span class="ide-tab-icon html-color">📄</span>
+            <span class="ide-tab-title">stage1.html</span>
+            <span class="ide-tab-badge">HTML5</span>
+          </button>
+          <button class="ide-tab-btn" data-lang="css" role="tab" id="tabBtnCss">
+            <span class="ide-tab-icon css-color">🎨</span>
+            <span class="ide-tab-title">stage1.css</span>
+            <span class="ide-tab-badge">CSS3</span>
+          </button>
+          <button class="ide-tab-btn" data-lang="js" role="tab" id="tabBtnJs">
+            <span class="ide-tab-icon js-color">⚡</span>
+            <span class="ide-tab-title">stage1.js</span>
+            <span class="ide-tab-badge">ES6+</span>
+          </button>
+          <button class="ide-tab-btn" data-lang="php" role="tab" id="tabBtnPhp">
+            <span class="ide-tab-icon php-color">🔒</span>
+            <span class="ide-tab-title">save_progress.php</span>
+            <span class="ide-tab-badge">PHP 8</span>
+          </button>
+        </div>
+
+        <!-- IDE TOOLS / ACTIONS -->
+        <div class="ide-actions">
+          <div class="ide-view-toggle">
+            <button class="ide-mode-btn active" id="ideModeCode" title="View Source Code">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+              <span>Code</span>
+            </button>
+            <button class="ide-mode-btn" id="ideModeLive" title="Test Live Interactive Workbench">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
+              <span>Simulator</span>
+            </button>
+          </div>
+          <button class="ide-copy-btn" id="ideCopyCodeBtn" title="Copy Current Snippet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span id="ideCopyText">Copy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- IDE STATUS SUB-BAR -->
+      <div class="ide-status-subbar">
+        <div class="ide-breadcrumb">
+          <span class="crumb-repo">convenire-game</span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-dir" id="ideBreadcrumbDir">root</span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-file" id="ideBreadcrumbFile">stage1.html</span>
+        </div>
+        <div class="ide-meta-tags">
+          <span class="meta-tag" id="ideMetaRole">Spatial Blueprint</span>
+          <span class="meta-tag-pill" id="ideMetaLines">436 lines</span>
+          <span class="meta-tag-pill">UTF-8</span>
+          <span class="meta-tag-pulse"><span class="pulse-led"></span> LIVE ENGINE</span>
+        </div>
+      </div>
+
+      <!-- ==================== TAB PANE 1: HTML5 ==================== -->
+      <div class="ide-tab-pane active" id="pane-html">
+        <div class="ide-split-layout">
+          <!-- CODE EDITOR COLUMN -->
+          <div class="ide-code-column">
+            <div class="code-editor-header">
+              <span class="code-lang-label">HTML5 · Hardware Dropzone & Socket Blueprint</span>
+              <span class="code-lines-count">game/stage1.html (Extract)</span>
+            </div>
+            <div class="code-viewport" id="codeViewportHtml">
+              <pre class="code-block"><code class="language-html"><span class="c-comment">&lt;!-- MOTHERBOARD DROP-ZONE TARGET MATRIX (LGA-1700 CHASSIS) --&gt;</span>
+<span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"board-assembly-area"</span> <span class="c-attr">id</span>=<span class="c-str">"boardAssemblyArea"</span><span class="c-tag">&gt;</span>
+
+  <span class="c-comment">&lt;!-- 1. CPU LGA-1700 SOCKET DROPZONE --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"dropzone socket-cpu"</span>
+       <span class="c-attr">id</span>=<span class="c-str">"cpuDropZone"</span>
+       <span class="c-attr">data-accept</span>=<span class="c-str">"cpu"</span>
+       <span class="c-attr">data-tolerance</span>=<span class="c-str">"38"</span>
+       <span class="c-attr">data-label</span>=<span class="c-str">"Intel Core i7-13700K Socket"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"dropzone-outline-reticle"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+    <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"socket-hud-label"</span><span class="c-tag">&gt;</span>CPU SOCKET [LGA-1700]<span class="c-tag">&lt;/span&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-comment">&lt;!-- 2. DDR5 DUAL-CHANNEL MEMORY SLOTS --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"dropzone slot-ram dimm-1"</span>
+       <span class="c-attr">id</span>=<span class="c-str">"ramSlot1"</span>
+       <span class="c-attr">data-accept</span>=<span class="c-str">"ram"</span>
+       <span class="c-attr">data-channel</span>=<span class="c-str">"DIMM_A2"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"notch-guide"</span><span class="c-tag">&gt;&lt;/div&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-comment">&lt;!-- 3. PCIE 5.0 X16 EXPANSION SLOT --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"dropzone slot-pcie"</span>
+       <span class="c-attr">id</span>=<span class="c-str">"gpuPcieSlot"</span>
+       <span class="c-attr">data-accept</span>=<span class="c-str">"gpu"</span>
+       <span class="c-attr">data-bus</span>=<span class="c-str">"PCIe x16"</span><span class="c-tag">&gt;</span>
+    <span class="c-tag">&lt;span</span> <span class="c-attr">class</span>=<span class="c-str">"slot-spec"</span><span class="c-tag">&gt;</span>PCIEX16_STEEL_ARMOR<span class="c-tag">&lt;/span&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+
+  <span class="c-comment">&lt;!-- 4. MAIN ATX 24-PIN POWER SOCKET --&gt;</span>
+  <span class="c-tag">&lt;div</span> <span class="c-attr">class</span>=<span class="c-str">"dropzone socket-power-24pin"</span>
+       <span class="c-attr">id</span>=<span class="c-str">"atx24PinSlot"</span>
+       <span class="c-attr">data-accept</span>=<span class="c-str">"24pin"</span><span class="c-tag">&gt;</span>
+  <span class="c-tag">&lt;/div&gt;</span>
+<span class="c-tag">&lt;/div&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE INSPECTOR / SIMULATION COLUMN -->
+          <div class="ide-demo-column">
+            <div class="demo-box-header">
+              <span class="demo-title"><span class="demo-badge">LIVE SIMULATOR</span> Motherboard Spatial Drop Radar</span>
+              <span class="demo-hint">Click or hover sockets to inspect HTML data-attributes</span>
+            </div>
+
+            <!-- INTERACTIVE MOTHERBOARD RADAR -->
+            <div class="pcb-radar-canvas">
+              <div class="pcb-board-silhouette">
+                <div class="pcb-grid-lines"></div>
+
+                <!-- SOCKET: CPU -->
+                <div class="pcb-target-slot active-inspect" id="radarCpuSlot" data-target="cpu" data-slotname="LGA-1700 CPU Socket" data-code='&lt;div class="dropzone socket-cpu" id="cpuDropZone" data-accept="cpu" data-tolerance="38"&gt;' data-desc="Primary CPU ZIF socket calibrated with mathematical Euclidean snap threshold (38px radius) to ensure realistic pinout docking.">
+                  <span class="slot-tag">CPU [LGA-1700]</span>
+                  <div class="slot-pin-array"></div>
+                </div>
+
+                <!-- SOCKET: RAM -->
+                <div class="pcb-target-slot" id="radarRamSlot" data-target="ram" data-slotname="DDR5 DIMM Slots" data-code='&lt;div class="dropzone slot-ram dimm-1" id="ramSlot1" data-accept="ram" data-channel="DIMM_A2"&gt;' data-desc="High-speed dual-channel memory slots requiring keyed offset orientation before latching.">
+                  <span class="slot-tag">DDR5 RAM (A2/B2)</span>
+                </div>
+
+                <!-- SOCKET: PCIE -->
+                <div class="pcb-target-slot" id="radarPcieSlot" data-target="pcie" data-slotname="PCIe 5.0 x16 Slot" data-code='&lt;div class="dropzone slot-pcie" id="gpuPcieSlot" data-accept="gpu" data-bus="PCIe x16"&gt;' data-desc="Reinforced expansion slot with retention clip latching GPU graphics accelerator.">
+                  <span class="slot-tag">PCIe 5.0 x16 (GPU)</span>
+                </div>
+
+                <!-- SOCKET: 24PIN -->
+                <div class="pcb-target-slot" id="radarAtxSlot" data-target="atx" data-slotname="24-Pin ATX Main Power" data-code='&lt;div class="dropzone socket-power-24pin" id="atx24PinSlot" data-accept="24pin"&gt;' data-desc="Main motherboard power rail supplying 3.3V, 5V, and 12V DC lines to the VRM phases.">
+                  <span class="slot-tag">24-PIN ATX POWER</span>
+                </div>
+
+                <!-- SOCKET: M2 -->
+                <div class="pcb-target-slot" id="radarM2Slot" data-target="m2" data-slotname="M.2 NVMe PCIe 4.0" data-code='&lt;div class="dropzone socket-m2" id="m2Slot1" data-accept="m2_ssd"&gt;' data-desc="Direct CPU-attached M.2 storage slot with thermal armor standoff.">
+                  <span class="slot-tag">M.2 NVMe SSD</span>
+                </div>
+              </div>
+
+              <!-- LIVE HTML ELEMENT TELEMETRY CARD -->
+              <div class="radar-telemetry-box" id="radarTelemetry">
+                <div class="telemetry-top">
+                  <span class="telemetry-badge" id="radarTargetBadge">ACTIVE TARGET: CPU SOCKET</span>
+                  <span class="telemetry-status">VALIDATED DOM NODE</span>
+                </div>
+                <div class="telemetry-name" id="radarTargetName">Intel LGA-1700 CPU Socket</div>
+                <div class="telemetry-markup-snippet">
+                  <code id="radarTargetMarkup">&lt;div class="dropzone socket-cpu" id="cpuDropZone" data-accept="cpu" data-tolerance="38"&gt;</code>
+                </div>
+                <p class="telemetry-desc" id="radarTargetDesc">
+                  Primary CPU ZIF socket calibrated with mathematical Euclidean snap threshold (38px radius) to ensure realistic pinout docking.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB PANE 2: CSS3 ==================== -->
+      <div class="ide-tab-pane" id="pane-css">
+        <div class="ide-split-layout">
+          <!-- CODE EDITOR COLUMN -->
+          <div class="ide-code-column">
+            <div class="code-editor-header">
+              <span class="code-lang-label">CSS3 · Glassmorphism & Cyber Neon Shader Engine</span>
+              <span class="code-lines-count">game/css/stage1.css (Extract)</span>
+            </div>
+            <div class="code-viewport" id="codeViewportCss">
+              <pre class="code-block"><code class="language-css"><span class="c-comment">/* DYNAMIC CYBER SHADER & DROP-ZONE ILLUMINATION */</span>
+<span class="c-selector">:root</span> {
+  <span class="c-prop">--neon-cyan</span>: <span class="c-val">#00f2fe</span>;
+  <span class="c-prop">--neon-glow</span>: <span class="c-val">0 0 25px rgba(0, 242, 254, 0.65)</span>;
+  <span class="c-prop">--bg-glass</span>: <span class="c-val">rgba(8, 14, 30, 0.82)</span>;
+}
+
+<span class="c-selector">.dropzone</span> {
+  <span class="c-prop">position</span>: <span class="c-val">absolute</span>;
+  <span class="c-prop">background</span>: <span class="c-val">var(--bg-glass)</span>;
+  <span class="c-prop">border</span>: <span class="c-val">2px dashed rgba(0, 242, 254, 0.35)</span>;
+  <span class="c-prop">border-radius</span>: <span class="c-val">12px</span>;
+  <span class="c-prop">backdrop-filter</span>: <span class="c-val">blur(12px)</span>;
+  <span class="c-prop">transition</span>: <span class="c-val">all 0.35s cubic-bezier(0.16, 1, 0.3, 1)</span>;
+}
+
+<span class="c-comment">/* TRIGGERED WHEN MATCHING HARDWARE COMPONENT HOVERS */</span>
+<span class="c-selector">.dropzone.valid-hover</span> {
+  <span class="c-prop">border-color</span>: <span class="c-val">var(--neon-cyan)</span>;
+  <span class="c-prop">border-style</span>: <span class="c-val">solid</span>;
+  <span class="c-prop">box-shadow</span>: <span class="c-val">var(--neon-glow)</span>, <span class="c-val">inset 0 0 20px rgba(0, 242, 254, 0.35)</span>;
+  <span class="c-prop">animation</span>: <span class="c-val">socketPulse 1.2s infinite alternate</span>;
+}
+
+<span class="c-selector">@keyframes socketPulse</span> {
+  <span class="c-prop">0%</span>   { <span class="c-prop">box-shadow</span>: <span class="c-val">0 0 15px rgba(0, 242, 254, 0.4)</span>; }
+  <span class="c-prop">100%</span> { <span class="c-prop">box-shadow</span>: <span class="c-val">0 0 40px rgba(0, 242, 254, 0.95)</span>; }
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE INSPECTOR / SIMULATION COLUMN -->
+          <div class="ide-demo-column">
+            <div class="demo-box-header">
+              <span class="demo-title"><span class="demo-badge">LIVE WORKBENCH</span> Realtime Cyber CSS Styler</span>
+              <span class="demo-hint">Adjust live sliders to dynamically restyle the game UI</span>
+            </div>
+
+            <div class="css-styler-playground">
+              <!-- CONTROLS PANEL -->
+              <div class="styler-controls">
+                <div class="control-row">
+                  <label class="control-label">NEON GLOW INTENSITY</label>
+                  <div class="slider-wrapper">
+                    <input type="range" id="cssGlowSlider" min="5" max="50" value="25" class="cyber-range">
+                    <span class="slider-val" id="cssGlowVal">25px</span>
+                  </div>
+                </div>
+
+                <div class="control-row">
+                  <label class="control-label">CYBER THEME PALETTE</label>
+                  <div class="theme-pill-selector">
+                    <button class="theme-btn active" data-color="#00f2fe" style="--c: #00f2fe;">Cyan Pulse</button>
+                    <button class="theme-btn" data-color="#a855f7" style="--c: #a855f7;">Ultraviolet</button>
+                    <button class="theme-btn" data-color="#10b981" style="--c: #10b981;">Matrix Green</button>
+                    <button class="theme-btn" data-color="#f59e0b" style="--c: #f59e0b;">Amber Glow</button>
+                  </div>
+                </div>
+
+                <div class="control-row switch-row">
+                  <label class="control-label">RETRO SCANLINE CRT FILTER</label>
+                  <label class="cyber-toggle">
+                    <input type="checkbox" id="cssScanlineToggle" checked>
+                    <span class="toggle-track"></span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- LIVE PREVIEW TARGET -->
+              <div class="css-live-preview-box" id="cssLivePreview">
+                <div class="preview-scanlines" id="previewScanlines"></div>
+                <div class="simulated-slot-card" id="simulatedSlotCard">
+                  <div class="slot-hologram-ring"></div>
+                  <div class="slot-inner-icon">
+                    <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="4" y="4" width="16" height="16" rx="2"></rect>
+                      <rect x="9" y="9" width="6" height="6"></rect>
+                      <line x1="9" y1="1" x2="9" y2="4"></line>
+                      <line x1="15" y1="1" x2="15" y2="4"></line>
+                      <line x1="9" y1="20" x2="9" y2="23"></line>
+                      <line x1="15" y1="20" x2="15" y2="23"></line>
+                    </svg>
+                  </div>
+                  <div class="slot-status-text">DROPZONE · VALID HOVER STATE</div>
+                  <div class="slot-css-computed" id="computedCssBadge">box-shadow: 0 0 25px #00f2fe</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB PANE 3: JAVASCRIPT ==================== -->
+      <div class="ide-tab-pane" id="pane-js">
+        <div class="ide-split-layout">
+          <!-- CODE EDITOR COLUMN -->
+          <div class="ide-code-column">
+            <div class="code-editor-header">
+              <span class="code-lang-label">JavaScript · Web Audio Synth & Snap Physics</span>
+              <span class="code-lines-count">game/javascript/stage1.js (Extract)</span>
+            </div>
+            <div class="code-viewport" id="codeViewportJs">
+              <pre class="code-block"><code class="language-js"><span class="c-comment">// PROCEDURAL AUDIO SYNTHESIZER (ZERO AUDIO LAG)</span>
+<span class="c-keyword">const</span> <span class="c-var">soundFx</span> = {
+  <span class="c-func">snap</span>: <span class="c-keyword">function</span>() {
+    <span class="c-keyword">const</span> <span class="c-var">ctx</span> = <span class="c-func">getAudioContext</span>();
+    <span class="c-keyword">const</span> <span class="c-var">osc</span> = <span class="c-var">ctx</span>.<span class="c-func">createOscillator</span>();
+    <span class="c-keyword">const</span> <span class="c-var">gain</span> = <span class="c-var">ctx</span>.<span class="c-func">createGain</span>();
+    <span class="c-var">osc</span>.<span class="c-prop">type</span> = <span class="c-str">'triangle'</span>;
+    <span class="c-var">osc</span>.<span class="c-prop">frequency</span>.<span class="c-func">setValueAtTime</span>(<span class="c-num">180</span>, <span class="c-var">ctx</span>.<span class="c-prop">currentTime</span>);
+    <span class="c-var">osc</span>.<span class="c-prop">frequency</span>.<span class="c-func">exponentialRampToValueAtTime</span>(<span class="c-num">60</span>, <span class="c-var">ctx</span>.<span class="c-prop">currentTime</span> + <span class="c-num">0.12</span>);
+    <span class="c-var">gain</span>.<span class="c-prop">gain</span>.<span class="c-func">setValueAtTime</span>(<span class="c-num">0.3</span>, <span class="c-var">ctx</span>.<span class="c-prop">currentTime</span>);
+    <span class="c-var">gain</span>.<span class="c-prop">gain</span>.<span class="c-func">exponentialRampToValueAtTime</span>(<span class="c-num">0.001</span>, <span class="c-var">ctx</span>.<span class="c-prop">currentTime</span> + <span class="c-num">0.12</span>);
+    <span class="c-var">osc</span>.<span class="c-func">connect</span>(<span class="c-var">gain</span>);
+    <span class="c-var">gain</span>.<span class="c-func">connect</span>(<span class="c-var">ctx</span>.<span class="c-prop">destination</span>);
+    <span class="c-var">osc</span>.<span class="c-func">start</span>();
+    <span class="c-var">osc</span>.<span class="c-func">stop</span>(<span class="c-var">ctx</span>.<span class="c-prop">currentTime</span> + <span class="c-num">0.12</span>);
+  }
+};
+
+<span class="c-comment">// CALIBRATED EUCLIDEAN SNAP TOLERANCE ENGINE</span>
+<span class="c-keyword">function</span> <span class="c-func">checkDropZone</span>(<span class="c-var">componentX</span>, <span class="c-var">componentY</span>, <span class="c-var">targetZone</span>) {
+  <span class="c-keyword">const</span> <span class="c-var">rect</span> = <span class="c-var">targetZone</span>.<span class="c-func">getBoundingClientRect</span>();
+  <span class="c-keyword">const</span> <span class="c-var">zoneCenterX</span> = <span class="c-var">rect</span>.<span class="c-prop">left</span> + <span class="c-var">rect</span>.<span class="c-prop">width</span> / <span class="c-num">2</span>;
+  <span class="c-keyword">const</span> <span class="c-var">zoneCenterY</span> = <span class="c-var">rect</span>.<span class="c-prop">top</span> + <span class="c-var">rect</span>.<span class="c-prop">height</span> / <span class="c-num">2</span>;
+
+  <span class="c-comment">// Calculate distance via Pythagorean Theorem</span>
+  <span class="c-keyword">const</span> <span class="c-var">distance</span> = <span class="c-var">Math</span>.<span class="c-func">hypot</span>(<span class="c-var">componentX</span> - <span class="c-var">zoneCenterX</span>, <span class="c-var">componentY</span> - <span class="c-var">zoneCenterY</span>);
+  <span class="c-keyword">const</span> <span class="c-var">TOLERANCE_PX</span> = <span class="c-func">parseFloat</span>(<span class="c-var">targetZone</span>.<span class="c-prop">dataset</span>.<span class="c-prop">tolerance</span>) || <span class="c-num">40</span>;
+
+  <span class="c-keyword">if</span> (<span class="c-var">distance</span> &lt;= <span class="c-var">TOLERANCE_PX</span>) {
+    <span class="c-var">soundFx</span>.<span class="c-func">snap</span>();
+    <span class="c-func">lockComponentInSocket</span>(<span class="c-var">targetZone</span>);
+    <span class="c-keyword">return</span> <span class="c-keyword">true</span>;
+  }
+  <span class="c-keyword">return</span> <span class="c-keyword">false</span>;
+}</code></pre>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE INSPECTOR / SIMULATION COLUMN -->
+          <div class="ide-demo-column">
+            <div class="demo-box-header">
+              <span class="demo-title"><span class="demo-badge">LIVE LAB</span> Web Audio Synthesizer & Physics Tester</span>
+              <span class="demo-hint">Play procedural synth sound effects and test socket physics</span>
+            </div>
+
+            <div class="js-lab-container">
+              <!-- PROCEDURAL SOUNDBOARD -->
+              <div class="soundboard-section">
+                <span class="lab-sub-title">1. WEB AUDIO API SYNTHESIZER SOUNDBOARD</span>
+                <div class="synth-buttons-grid">
+                  <button class="synth-btn" id="synthBtnBlip">
+                    <span class="synth-icon">🎵</span>
+                    <span class="synth-label">Audio Blip</span>
+                    <span class="synth-hz">800Hz → 1400Hz</span>
+                  </button>
+                  <button class="synth-btn" id="synthBtnSnap">
+                    <span class="synth-icon">⚡</span>
+                    <span class="synth-label">Socket Snap</span>
+                    <span class="synth-hz">180Hz → 60Hz</span>
+                  </button>
+                  <button class="synth-btn" id="synthBtnHum">
+                    <span class="synth-icon">🔌</span>
+                    <span class="synth-label">Power Hum</span>
+                    <span class="synth-hz">300Hz → 900Hz</span>
+                  </button>
+                  <button class="synth-btn" id="synthBtnVictory">
+                    <span class="synth-icon">🏆</span>
+                    <span class="synth-label">Victory Chime</span>
+                    <span class="synth-hz">523Hz → 1046Hz</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- INTERACTIVE SNAP PHYSICS TEST -->
+              <div class="snap-tester-section">
+                <span class="lab-sub-title">2. EUCLIDEAN SNAP TOLERANCE LAB</span>
+                <div class="snap-sandbox" id="snapSandbox">
+                  <div class="snap-target-socket" id="sandboxTargetSocket">
+                    <div class="snap-ring-wave"></div>
+                    <span class="target-socket-label">TARGET SOCKET (LGA-1700)</span>
+                    <span class="tolerance-radius-badge">RADIUS: 45PX</span>
+                  </div>
+
+                  <div class="draggable-test-chip" id="sandboxDraggableChip">
+                    <div class="chip-metal-cap">CPU</div>
+                    <span class="chip-drag-hint">DRAG ME</span>
+                  </div>
+                </div>
+                <div class="snap-feedback-bar" id="sandboxFeedback">
+                  <span class="feedback-status" id="sandboxStatusText">STATUS: Awaiting Drag Gesture</span>
+                  <span class="feedback-coords" id="sandboxDistanceText">Distance: -- px</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ==================== TAB PANE 4: PHP & MYSQL ==================== -->
+      <div class="ide-tab-pane" id="pane-php">
+        <div class="ide-split-layout">
+          <!-- CODE EDITOR COLUMN -->
+          <div class="ide-code-column">
+            <div class="code-editor-header">
+              <span class="code-lang-label">PHP 8.x · Student Session Auth & Score Logging API</span>
+              <span class="code-lines-count">game/php/save_progress.php (Extract)</span>
+            </div>
+            <div class="code-viewport" id="codeViewportPhp">
+              <pre class="code-block"><code class="language-php"><span class="c-comment">&lt;?php</span>
+<span class="c-func">header</span>(<span class="c-str">'Content-Type: application/json'</span>);
+<span class="c-keyword">require_once</span> <span class="c-str">'db_connect.php'</span>;
+
+<span class="c-comment">// 1. Parse JSON Payload from Client Fetch Request</span>
+<span class="c-var">$data</span> = <span class="c-func">json_decode</span>(<span class="c-func">file_get_contents</span>(<span class="c-str">"php://input"</span>), <span class="c-keyword">true</span>);
+<span class="c-var">$studentIdNumber</span> = <span class="c-func">trim</span>(<span class="c-var">$data</span>[<span class="c-str">'studentId'</span>] ?? <span class="c-str">''</span>);
+<span class="c-var">$stage</span>           = <span class="c-func">intval</span>(<span class="c-var">$data</span>[<span class="c-str">'stage'</span>] ?? <span class="c-num">0</span>);
+<span class="c-var">$score</span>           = <span class="c-func">intval</span>(<span class="c-var">$data</span>[<span class="c-str">'score'</span>] ?? <span class="c-num">0</span>);
+
+<span class="c-comment">// 2. Validate Parameters Against Injection</span>
+<span class="c-keyword">if</span> (!<span class="c-var">$studentIdNumber</span> || <span class="c-var">$stage</span> &lt; <span class="c-num">1</span> || <span class="c-var">$stage</span> &gt; <span class="c-num">3</span>) {
+    <span class="c-func">http_response_code</span>(<span class="c-num">400</span>);
+    <span class="c-func">echo</span> <span class="c-func">json_encode</span>([<span class="c-str">"success"</span> =&gt; <span class="c-keyword">false</span>, <span class="c-str">"message"</span> =&gt; <span class="c-str">"Invalid parameters."</span>]);
+    <span class="c-keyword">exit</span>;
+}
+
+<span class="c-comment">// 3. Secure Prepared SQL Statement Execution</span>
+<span class="c-var">$now</span> = <span class="c-keyword">new</span> <span class="c-func">DateTime</span>();
+<span class="c-var">$playDate</span> = <span class="c-var">$now</span>-&gt;<span class="c-func">format</span>(<span class="c-str">'Y-m-d'</span>);
+<span class="c-var">$playTime</span> = <span class="c-var">$now</span>-&gt;<span class="c-func">format</span>(<span class="c-str">'H:i:s'</span>);
+
+<span class="c-var">$insert</span> = <span class="c-var">$conn</span>-&gt;<span class="c-func">prepare</span>(
+    <span class="c-str">"INSERT INTO game_logs (student_id, stage, play_date, play_time, score) VALUES (?, ?, ?, ?, ?)"</span>
+);
+<span class="c-var">$insert</span>-&gt;<span class="c-func">bind_param</span>(<span class="c-str">"sissi"</span>, <span class="c-var">$studentIdNumber</span>, <span class="c-var">$stage</span>, <span class="c-var">$playDate</span>, <span class="c-var">$playTime</span>, <span class="c-var">$score</span>);
+<span class="c-var">$insert</span>-&gt;<span class="c-func">execute</span>();
+
+<span class="c-comment">// 4. Return Normalized JSON Telemetry to Frontend</span>
+<span class="c-func">echo</span> <span class="c-func">json_encode</span>([
+    <span class="c-str">"success"</span> =&gt; <span class="c-keyword">true</span>,
+    <span class="c-str">"message"</span> =&gt; <span class="c-str">"Stage progress logged."</span>,
+    <span class="c-str">"log_id"</span>  =&gt; <span class="c-var">$insert</span>-&gt;<span class="c-prop">insert_id</span>
+]);
+<span class="c-var">$conn</span>-&gt;<span class="c-func">close</span>();
+<span class="c-comment">?&gt;</span></code></pre>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE INSPECTOR / SIMULATION COLUMN -->
+          <div class="ide-demo-column">
+            <div class="demo-box-header">
+              <span class="demo-title"><span class="demo-badge">LIVE REST API</span> Backend Session API Simulator</span>
+              <span class="demo-hint">Simulate a real JSON API request sent from the game engine</span>
+            </div>
+
+            <div class="php-api-playground">
+              <!-- API REQUEST FORM -->
+              <div class="api-request-box">
+                <div class="api-endpoint-badge">
+                  <span class="http-method">POST</span>
+                  <span class="http-url">/game/php/save_progress.php</span>
+                </div>
+
+                <div class="api-inputs-grid">
+                  <div class="api-input-group">
+                    <label>STUDENT ID NUMBER</label>
+                    <input type="text" id="apiStudentId" value="BSCS-2026-042" class="cyber-input">
+                  </div>
+                  <div class="api-input-group">
+                    <label>GAME STAGE</label>
+                    <select id="apiStageSelect" class="cyber-select">
+                      <option value="1">Stage 1: Motherboard Basics</option>
+                      <option value="2">Stage 2: Port Identification</option>
+                      <option value="3">Stage 3: Cable Crimping</option>
+                    </select>
+                  </div>
+                  <div class="api-input-group">
+                    <label>ACHIEVED SCORE</label>
+                    <input type="number" id="apiScore" value="950" class="cyber-input">
+                  </div>
+                  <div class="api-input-group api-btn-cell">
+                    <button class="btn btn-cyber-cta" id="apiSendBtn">
+                      <span>EXECUTE API CALL</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- LIVE RESPONSE CONSOLE -->
+              <div class="api-response-console">
+                <div class="console-header">
+                  <span class="console-label">RESPONSE TERMINAL</span>
+                  <div class="response-status-badge" id="apiStatusBadge">HTTP 200 OK · 42ms</div>
+                </div>
+                <div class="console-body" id="apiConsoleOutput">
+<pre class="json-output">{
+  <span class="j-key">"status"</span>: <span class="j-val">200</span>,
+  <span class="j-key">"success"</span>: <span class="j-bool">true</span>,
+  <span class="j-key">"message"</span>: <span class="j-str">"Stage progress successfully saved to MySQL database."</span>,
+  <span class="j-key">"data"</span>: {
+    <span class="j-key">"student_id"</span>: <span class="j-str">"BSCS-2026-042"</span>,
+    <span class="j-key">"stage"</span>: <span class="j-num">1</span>,
+    <span class="j-key">"score"</span>: <span class="j-num">950</span>,
+    <span class="j-key">"rank"</span>: <span class="j-str">"HARDWARE ARCHITECT (A+)"</span>,
+    <span class="j-key">"log_id"</span>: <span class="j-num">1042</span>,
+    <span class="j-key">"recorded_at"</span>: <span class="j-str">"2026-10-06 22:30:14"</span>
+  }
+}</pre>
+                </div>
+                <div class="sql-preview-bar" id="sqlPreviewBar">
+                  <span class="sql-icon">🗄️ MySQL:</span>
+                  <code id="sqlPreviewText">INSERT INTO game_logs (student_id, stage, score) VALUES ('BSCS-2026-042', 1, 950);</code>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FULL-STACK ARCHITECTURAL PIPELINE DIAGRAM -->
+    <div class="tech-pipeline-wrapper spotlight-card reveal-on-scroll reveal-delay-3">
+      <div class="pipeline-header">
+        <span class="pipeline-badge">FULL-STACK DATAFLOW PIPELINE</span>
+        <h3 class="pipeline-title">How the 4 Technologies Synchronize in Real Time</h3>
+        <p class="pipeline-desc">
+          From the student's mouse interaction in the browser down to the secure MySQL database row and Teacher Dashboard analytics:
+        </p>
+      </div>
+
+      <div class="pipeline-steps-grid">
+        <!-- Step 1 -->
+        <div class="pipeline-step-item">
+          <div class="step-num">01</div>
+          <div class="step-lang-chip html-chip">HTML5</div>
+          <h4>DOM Blueprint</h4>
+          <p>Mounts semantic motherboard slots, drop-zones, and component cards into the browser DOM.</p>
+          <div class="step-connector"></div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="pipeline-step-item">
+          <div class="step-num">02</div>
+          <div class="step-lang-chip css-chip">CSS3</div>
+          <h4>Visual Shaders</h4>
+          <p>Renders glassmorphic cyber HUDs, dynamic neon borders, and hover pulse keyframes at 60 FPS.</p>
+          <div class="step-connector"></div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="pipeline-step-item">
+          <div class="step-num">03</div>
+          <div class="step-lang-chip js-chip">JAVASCRIPT</div>
+          <h4>Physics & Web Audio</h4>
+          <p>Calculates Pythagorean distance snap tolerance, drives game loop, and synthesizes procedural sound FX.</p>
+          <div class="step-connector"></div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="pipeline-step-item">
+          <div class="step-num">04</div>
+          <div class="step-lang-chip php-chip">PHP & MYSQL</div>
+          <h4>REST API & Logging</h4>
+          <p>Validates student session, executes prepared SQL statements, and feeds the Teacher Dashboard telemetry.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DEVELOPERS SECTION -->
+  <section id="developers">
+    <div class="hud-corner-tl">[ 08/08 DEVELOPERS.SYS ]</div>
+    <div class="hud-corner-br">[ PROJECT TEAM ]</div>
+
+    <div class="section-header reveal-on-scroll">
+      <span class="section-badge">
+        <span class="badge-dot"></span> Project Credits
+      </span>
+      <h2 class="section-title">Meet The <span class="gradient-purple">Developers</span></h2>
+      <p class="section-desc">
+        Developed by BSCS Students at North Negros College — Dedicated to improving computer hardware education through
+        gamified software engineering.
+      </p>
+    </div>
+
+    <div class="dev-team-grid reveal-on-scroll reveal-delay-1">
+      <!-- DEVELOPER 1: Shirly Canoy -->
+      <div class="dev-profile-card spotlight-card">
+        <div class="dev-photo-wrapper">
+          <img src="images/shirly.jpg" alt="Shirly Canoy Photo" class="dev-photo">
+          <span class="dev-badge">Lead Developer</span>
+        </div>
+        <h3 class="dev-name">Shirly Canoy</h3>
+        <p class="dev-title">Frontend System Architect</p>
+        <p class="dev-college">North Negros College</p>
+        <p class="dev-bio">Spearheaded the visual engine, interactive hardware assembly simulation, and core gameplay
+          mechanics.</p>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- DEVELOPER 2: Renz Vito -->
+      <div class="dev-profile-card spotlight-card">
+        <div class="dev-photo-wrapper">
+          <img src="images/renz-vito.jpg" alt="Renz Vito Photo" class="dev-photo">
+          <span class="dev-badge">UI/UX & Frontend</span>
+        </div>
+        <h3 class="dev-name">Renz Vito</h3>
+        <p class="dev-title">UI/UX & Visual Assets Specialist</p>
+        <p class="dev-college">North Negros College</p>
+        <p class="dev-bio">Crafted the neon cyber aesthetics, glassmorphism design system, interactive UI layouts, and
+          user experience.</p>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- DEVELOPER 3: Jess Reynan Fajardo -->
+      <div class="dev-profile-card spotlight-card">
+        <div class="dev-photo-wrapper">
+          <img src="images/jess-reynan-fajardo.jpg" alt="Jess Reynan Fajardo Photo" class="dev-photo">
+          <span class="dev-badge">Backend & Systems</span>
+        </div>
+        <h3 class="dev-name">Jess Reynan Fajardo</h3>
+        <p class="dev-title">Backend Systems & Database Engineer</p>
+        <p class="dev-college">North Negros College</p>
+        <p class="dev-bio">Engineered backend data schemas, API integration, session management, and system
+          architecture.</p>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- DEVELOPER 4: Frontend Developer -->
+      <div class="dev-profile-card spotlight-card">
+        <div class="dev-photo-wrapper">
+          <img src="images/arnold.png" alt="Frontend Developer Photo" class="dev-photo">
+          <span class="dev-badge">Frontend Developer</span>
+        </div>
+        <h3 class="dev-name">Arnold Azuelo</h3>
+        <p class="dev-title">Frontend Component & Interactive UI Specialist</p>
+        <p class="dev-college">North Negros College</p>
+        <p class="dev-bio">Developed responsive UI components, user interactions, animation workflows, and client-side
+          state logic.</p>
+        <div class="card-hover-border"></div>
+      </div>
+
+      <!-- DEVELOPER 5: Backend Developer -->
+      <div class="dev-profile-card spotlight-card">
+        <div class="dev-photo-wrapper">
+          <img src="images/cyrus.jpg" alt="Cyrus Jamillarin Photo" class="dev-photo dev-photo-cyrus">
+          <span class="dev-badge">Backend Developer</span>
+        </div>
+        <h3 class="dev-name">Cyrus Jamillarin</h3>
+        <p class="dev-title">Backend & Database Systems Specialist</p>
+        <p class="dev-college">North Negros College</p>
+        <p class="dev-bio">Engineered database schemas, authentication microservices, API routes, and data validation
+          pipelines.</p>
+        <div class="card-hover-border"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-brand">
+        <div class="nav-brand-icon">
+          <img src="images/logo.png" alt="CONVENIRE Logo" class="nav-logo-img">
+        </div>
+        <h3>CONVENIRE</h3>
+      </div>
+      <p>© 2026 CONVENIRE. All Rights Reserved. North Negros College BSCS Software Engineering Project.</p>
+      <a href="#home" class="scroll-top-btn" title="Back to Top">↑</a>
+    </div>
+  </footer>
+
+  <!-- REALISTIC DRAGGING HAND OVERLAY -->
+  <div class="floating-drag-hand" id="floatingDragHand">
+    <img src="images/hands/hand-grab.png" alt="Dragging Hand" class="hand-sprite" id="floatingDragHandImg">
+    <div class="floating-held-item" id="floatingHeldItem"></div>
+  </div>
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="convenireToastContainer" class="toast-container"></div>
+
+  <!-- JS Scripts -->
+  <script src="website.js"></script>
+</body>
+
+</html>
