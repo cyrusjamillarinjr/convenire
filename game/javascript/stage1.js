@@ -199,9 +199,11 @@
     const dragSound = document.getElementById("dragSound");
     
     // Game State
+    const STAGE1_DURATION = 90; // 90 seconds (1 minute 30 seconds duration)
     let gameActive = true;
     let timerInterval = null;
-    let timeLeft = 60; // 1 minute
+    let timeLeft = STAGE1_DURATION;
+    let hasChosenMotherboard = false;
     let score = 0;
     let zoneAssignments = {};
     let powerUsed = false;
@@ -577,7 +579,7 @@
         }
 
         if (timerPill) {
-            if (timeLeft <= 10) {
+            if (timeLeft <= 15) {
                 timerPill.className = 'timer-pill urgent';
             } else if (timeLeft <= 30) {
                 timerPill.className = 'timer-pill warning';
@@ -743,10 +745,10 @@
         if (draggedId === accept) {
             // Speed scoring calculation (100 PTS Max Scale):
             // Base placement score: 5 pts (7 x 5 = 35 pts)
-            // Speed bonus: up to +5 pts based on remaining time (timeLeft / 60 * 5) -> (7 x 5 = 35 pts)
+            // Speed bonus: up to +5 pts based on remaining time (timeLeft / 120 * 5) -> (7 x 5 = 35 pts)
             // Max from mounting: 70 pts
             const basePts = 5;
-            const speedBonus = Math.max(0, Math.round((timeLeft / 60) * 5));
+            const speedBonus = Math.max(0, Math.round((timeLeft / STAGE1_DURATION) * 5));
             const earnedPts = basePts + speedBonus;
             
             score = Math.min(100, score + earnedPts);
@@ -947,7 +949,7 @@
 
             // Power POST Check & Remaining Time Bonus (Max 100 PTS Scale):
             // +10 PTS for flawless POST + up to +20 PTS for remaining time
-            const timeBonus = Math.min(20, Math.round((timeLeft / 60) * 20));
+            const timeBonus = Math.min(20, Math.round((timeLeft / STAGE1_DURATION) * 20));
             score = Math.min(100, score + 10 + timeBonus);
             updateScore();
 
@@ -1075,7 +1077,7 @@
         powerAttempted = false;
         gameWon = false;
         score = 0;
-        timeLeft = 60;
+        timeLeft = STAGE1_DURATION;
         zoneAssignments = {};
         
         if (board) {
@@ -1106,14 +1108,17 @@
         updateScore();
         updateTimer();
         updatePlacedCounter();
-        startTimer();
+        
+        // Start timer only if motherboard has already been selected by player
+        if (hasChosenMotherboard) {
+            startTimer();
+            if (gameMusic && gameMusic.paused && !gameWon) {
+                gameMusic.play().catch(()=>{});
+            }
+        }
         
         if (gameMessage) gameMessage.innerText = 'Socket all 7 components into the motherboard and initiate power.';
         if (powerBtn) powerBtn.classList.remove("on");
-
-        if (gameMusic && gameMusic.paused && !gameWon) {
-            gameMusic.play().catch(()=>{});
-        }
     }
 
     // ===================================================
@@ -1185,7 +1190,12 @@
         } else if (e.code === 'KeyR') {
             resetStage();
         } else if (e.code === 'KeyS') {
-            playStage1Story();
+            if (timerInterval) clearInterval(timerInterval);
+            playStage1Story(() => {
+                if (hasChosenMotherboard && gameActive && !isGameOver && !gameWon) {
+                    startTimer();
+                }
+            });
         } else if (e.code === 'Escape') {
             if (alertBox && alertBox.style.display === 'flex') {
                 closeAlert();
@@ -1234,7 +1244,14 @@
 
     const storyBriefBtn = document.getElementById('storyBriefBtn');
     if (storyBriefBtn) {
-        storyBriefBtn.addEventListener('click', () => playStage1Story(function() {}));
+        storyBriefBtn.addEventListener('click', () => {
+            if (timerInterval) clearInterval(timerInterval);
+            playStage1Story(() => {
+                if (hasChosenMotherboard && gameActive && !isGameOver && !gameWon) {
+                    startTimer();
+                }
+            });
+        });
     }
 
     // Initialize Game & Component Tooltips
@@ -1259,8 +1276,8 @@
         const boardImg     = document.querySelector('.board-img');
 
         if (!overlay) {
-            // If overlay not found, just play story immediately
-            setTimeout(() => playStage1Story(function() {}), 450);
+            hasChosenMotherboard = true;
+            startTimer();
             return;
         }
 
@@ -1272,6 +1289,7 @@
 
         function selectMap(mapKey) {
             selectedMap = mapKey;
+            hasChosenMotherboard = true;
 
             // Swap the board image
             if (boardImg) {
@@ -1295,21 +1313,27 @@
             // Apply the correct drop zone positions for this map
             applyDropZoneLayout(mapKey);
 
-
             // Swap component images & specs in the left panel
             applyComponentUI(mapKey);
 
             // Play a satisfying blip
             soundFx.blip();
 
+            // Start 90s timer (1:30) immediately upon selecting the motherboard
+            timeLeft = STAGE1_DURATION;
+            updateTimer();
+            startTimer();
+
+            // Start gameplay background music
+            if (gameMusic && gameMusic.paused && !gameWon) {
+                gameMusic.play().catch(()=>{});
+            }
+
             // Animate overlay out
             overlay.classList.add('fade-out');
             overlay.addEventListener('animationend', function onEnd() {
                 overlay.removeEventListener('animationend', onEnd);
                 overlay.style.display = 'none';
-
-                // Now trigger the story brief
-                setTimeout(() => playStage1Story(function() {}), 300);
             }, { once: true });
         }
 

@@ -58,18 +58,6 @@
                         <line x1="1530" y1="370" x2="1560" y2="370" stroke="#00f5ff" stroke-width="2" />
                     </g>
                 </svg>
-
-                <!-- Motherboard Hardware Telemetry Background Readouts -->
-                <div class="motherboard-telemetry">
-                    <div class="telemetry-item item-top-right">
-                        <span class="telemetry-label">CHIPSET // BUS LINK</span>
-                        <span class="telemetry-val">Z790 CONVENIRE-CORE // READY</span>
-                    </div>
-                    <div class="telemetry-item item-bottom-mid">
-                        <span class="telemetry-label">PUZZLE MATRIX</span>
-                        <span class="telemetry-val">SOCKET LGA-1700 // HARDWARE OK</span>
-                    </div>
-                </div>
             </div>
 
             <!-- SVG Futuristic Sci-Fi HUD Wireframe Frame -->
@@ -418,13 +406,27 @@
                                             Incomplete</span>
                                     </div>
                                 </div>
+
+                                <div class="simple-score-row">
+                                    <div class="row-left">
+                                        <span class="stage-tag"
+                                            style="background:rgba(255,184,0,0.15); color:#ffb800; border-color:#ffb800;">BONUS
+                                            QUIZ</span>
+                                        <span class="stage-name">CSS NC II Theory Quiz</span>
+                                    </div>
+                                    <div class="row-right">
+                                        <span class="stage-score" id="playerBonusScore">0 / 50 PTS</span>
+                                        <span class="stage-status status-incomplete" id="playerBonusStatus">🔒
+                                            Incomplete</span>
+                                    </div>
+                                </div>
                             </div>
 
                             <!-- Total Score Display -->
                             <div class="simple-total-box">
                                 <div class="total-label-box">
                                     <span class="total-label">TOTAL SCORE</span>
-                                    <span class="total-max">Max Possible: 300 PTS</span>
+                                    <span class="total-max">Max Possible: 350 PTS</span>
                                 </div>
                                 <div class="total-score-val" id="playerGrandTotal">0 PTS</div>
                             </div>
@@ -435,7 +437,9 @@
                             <div class="rule-chip"><span>🖥️ Stage 1:</span> <strong>100 pts</strong></div>
                             <div class="rule-chip"><span>🔌 Stage 2:</span> <strong>100 pts</strong></div>
                             <div class="rule-chip"><span>✂️ Stage 3:</span> <strong>100 pts</strong></div>
-                            <div class="rule-chip highlight-chip"><span>🏆 Total:</span> <strong>300 pts</strong></div>
+                            <div class="rule-chip" style="border-color:#ffb800;"><span>⚡ Bonus Quiz:</span> <strong
+                                    style="color:#ffb800;">50 pts</strong></div>
+                            <div class="rule-chip highlight-chip"><span>🏆 Total:</span> <strong>350 pts</strong></div>
                         </div>
 
                         <!-- Top High Scores Leaderboard Table -->
@@ -454,6 +458,7 @@
                                             <th>STG 1</th>
                                             <th>STG 2</th>
                                             <th>STG 3</th>
+                                            <th>BONUS</th>
                                             <th>TOTAL</th>
                                             <th>GRADE</th>
                                         </tr>
@@ -931,10 +936,10 @@
             </div>
 
             <script src="javascript/storyEngine.js?v=20261002b"></script>
-            <script src="javascript/authEngine.js?v=20261002b"></script>
+            <script src="javascript/authEngine.js?v=20261011_bonus4"></script>
             <script src="javascript/tutorialEngine.js?v=20261002b"></script>
             <script src="javascript/cyberVideoEngine.js?v=20261002b"></script>
-            <script src="javascript/script.js?v=20261002b"></script>
+            <script src="javascript/script.js?v=20261012_stage_times"></script>
 </body>
 
 </html>

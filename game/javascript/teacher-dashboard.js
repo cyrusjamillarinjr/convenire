@@ -43,28 +43,13 @@
     // ─────────────────────────────────────────────────────────
     let state = {
         searchQuery: '',
-        sortCol: 'date',
+        sortCol: 'total',
         sortDir: 'desc'
     };
 
     // ─────────────────────────────────────────────────────────
     // HELPERS
     // ─────────────────────────────────────────────────────────
-    function sessionDate(session) {
-        const src = session.startTime || session.timestamp;
-        if (!src) return null;
-        const d = new Date(src);
-        return isNaN(d) ? null : d;
-    }
-
-    function fmtDateTime(d) {
-        if (!d) return '—';
-        return d.toLocaleString([], {
-            month: 'short', day: 'numeric', year: 'numeric',
-            hour: '2-digit', minute: '2-digit', hour12: true
-        });
-    }
-
     function scoreClass(score) {
         if (score >= 80) return 'high';
         if (score >= 50) return 'mid';
@@ -72,57 +57,89 @@
     }
 
     // ─────────────────────────────────────────────────────────
+    let dbStudents = [];
     let dbLogs = [];
 
-    function fetchDbLogs() {
-        fetch('php/get_logs.php')
-            .then(res => res.json())
-            .then(data => {
-                if (data.success && Array.isArray(data.logs)) {
-                    dbLogs = data.logs;
-                    render();
-                }
-            })
-            .catch(err => console.warn('[DB Logs] Could not fetch MySQL logs:', err));
+    function fetchDbData() {
+        Promise.all([
+            fetch('php/get_leaderboard.php').then(res => res.json()).catch(() => ({ success: false })),
+            fetch('php/get_logs.php').then(res => res.json()).catch(() => ({ success: false }))
+        ]).then(([lbData, logsData]) => {
+            if (lbData && lbData.success && Array.isArray(lbData.leaderboard)) {
+                dbStudents = lbData.leaderboard;
+            }
+            if (logsData && logsData.success && Array.isArray(logsData.logs)) {
+                dbLogs = logsData.logs;
+            }
+            render();
+        }).catch(err => console.warn('[Teacher Dashboard] Fetch error:', err));
     }
 
     // ─────────────────────────────────────────────────────────
-    // BUILD FLAT SESSION LIST (one row per play session)
+    // BUILD STUDENT RECORD ROWS (Stage 1, Stage 2, Stage 3, Bonus Quiz, Total)
     // ─────────────────────────────────────────────────────────
-    function buildSessionRows(users) {
-        const rows = [];
-        const seenKeys = new Set();
+    function buildStudentRows(users) {
+        const map = new Map();
 
+        // 1. Ingest local user accounts
         users.forEach(u => {
-            const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.studentId || 'Unknown';
-            (u.logs || []).forEach(log => {
-                const dateObj = sessionDate(log);
-                const key = `${u.studentId}_${log.stage}_${log.score}`;
-                seenKeys.add(key);
-                rows.push({
-                    studentId: u.studentId || '—',
-                    name: fullName,
-                    date: dateObj,
-                    score: log.score != null ? log.score : null
-                });
+            const sid = (u.studentId || u.id || '').trim();
+            if (!sid) return;
+            const fullName = `${u.firstName || ''} ${u.lastName || ''}`.trim() || u.name || sid;
+            const s1 = Math.min(100, parseInt(u.scores?.stage1) || 0);
+            const s2 = Math.min(100, parseInt(u.scores?.stage2) || 0);
+            const s3 = Math.min(100, parseInt(u.scores?.stage3) || 0);
+            const bonus = Math.min(50, parseInt(u.scores?.stage3_bonus) || 0);
+            const total = s1 + s2 + s3 + bonus;
+
+            map.set(sid.toLowerCase(), {
+                studentId: sid,
+                name: fullName,
+                section: u.section || 'N/A',
+                stage1: s1,
+                stage2: s2,
+                stage3: s3,
+                bonus: bonus,
+                total: total
             });
         });
 
-        dbLogs.forEach(dbl => {
-            const key = `${dbl.id_number}_${dbl.stage}_${dbl.score}`;
-            if (!seenKeys.has(key)) {
-                seenKeys.add(key);
-                const d = new Date(dbl.timestamp);
-                rows.push({
-                    studentId: dbl.id_number || '—',
-                    name: dbl.full_name,
-                    date: isNaN(d) ? null : d,
-                    score: dbl.score
+        // 2. Ingest / merge with live MySQL student records
+        dbStudents.forEach(db => {
+            const sid = (db.studentId || '').trim();
+            if (!sid) return;
+            const key = sid.toLowerCase();
+            const s1 = Math.min(100, parseInt(db.scores?.stage1) || 0);
+            const s2 = Math.min(100, parseInt(db.scores?.stage2) || 0);
+            const s3 = Math.min(100, parseInt(db.scores?.stage3) || 0);
+            const bonus = Math.min(50, parseInt(db.scores?.stage3_bonus) || 0);
+            const total = s1 + s2 + s3 + bonus;
+            const name = db.fullName || db.name || sid;
+
+            if (map.has(key)) {
+                const existing = map.get(key);
+                existing.stage1 = Math.max(existing.stage1, s1);
+                existing.stage2 = Math.max(existing.stage2, s2);
+                existing.stage3 = Math.max(existing.stage3, s3);
+                existing.bonus = Math.max(existing.bonus, bonus);
+                existing.total = existing.stage1 + existing.stage2 + existing.stage3 + existing.bonus;
+                if (db.section && db.section !== 'N/A') existing.section = db.section;
+                if (name && name !== sid) existing.name = name;
+            } else {
+                map.set(key, {
+                    studentId: sid,
+                    name: name,
+                    section: db.section || 'N/A',
+                    stage1: s1,
+                    stage2: s2,
+                    stage3: s3,
+                    bonus: bonus,
+                    total: total
                 });
             }
         });
 
-        return rows;
+        return Array.from(map.values());
     }
 
     function filterRows(rows) {
@@ -130,7 +147,8 @@
         if (!q) return rows;
         return rows.filter(r =>
             r.name.toLowerCase().includes(q) ||
-            (r.studentId && r.studentId.toLowerCase().includes(q))
+            r.studentId.toLowerCase().includes(q) ||
+            r.section.toLowerCase().includes(q)
         );
     }
 
@@ -141,13 +159,28 @@
             if (state.sortCol === 'name') {
                 va = a.name.toLowerCase();
                 vb = b.name.toLowerCase();
-            } else if (state.sortCol === 'score') {
-                va = a.score != null ? a.score : -1;
-                vb = b.score != null ? b.score : -1;
+            } else if (state.sortCol === 'studentId') {
+                va = a.studentId.toLowerCase();
+                vb = b.studentId.toLowerCase();
+            } else if (state.sortCol === 'section') {
+                va = a.section.toLowerCase();
+                vb = b.section.toLowerCase();
+            } else if (state.sortCol === 'stage1') {
+                va = a.stage1;
+                vb = b.stage1;
+            } else if (state.sortCol === 'stage2') {
+                va = a.stage2;
+                vb = b.stage2;
+            } else if (state.sortCol === 'stage3') {
+                va = a.stage3;
+                vb = b.stage3;
+            } else if (state.sortCol === 'bonus') {
+                va = a.bonus;
+                vb = b.bonus;
             } else {
-                // date
-                va = a.date ? a.date.getTime() : 0;
-                vb = b.date ? b.date.getTime() : 0;
+                // total
+                va = a.total;
+                vb = b.total;
             }
             if (va < vb) return -1 * dir;
             if (va > vb) return 1 * dir;
@@ -175,18 +208,19 @@
     // ─────────────────────────────────────────────────────────
     function render() {
         const users = getUsers();
-        let rows = buildSessionRows(users);
+        let rows = buildStudentRows(users);
 
-        // Summary stats (over all sessions, not affected by search)
-        const uniqueStudents = new Set(rows.map(r => r.name)).size;
-        const scored = rows.filter(r => r.score != null);
-        const avgScore = scored.length
-            ? Math.round(scored.reduce((s, r) => s + r.score, 0) / scored.length)
-            : null;
+        // Summary stats
+        const uniqueStudents = rows.length;
+        const totalSessions = dbLogs.length;
+        const totalScores = rows.map(r => r.total);
+        const avgScore = totalScores.length
+            ? Math.round(totalScores.reduce((s, r) => s + r, 0) / totalScores.length)
+            : 0;
 
-        if (elStatSessions) elStatSessions.textContent = rows.length;
+        if (elStatSessions) elStatSessions.textContent = totalSessions;
         if (elStatStudents) elStatStudents.textContent = uniqueStudents;
-        if (elStatAvgScore) elStatAvgScore.textContent = avgScore != null ? avgScore + '%' : '—';
+        if (elStatAvgScore) elStatAvgScore.textContent = `${avgScore} / 350 PTS`;
 
         rows = filterRows(rows);
         rows = sortRows(rows);
@@ -200,24 +234,23 @@
         if (rows.length === 0) {
             elTableBody.innerHTML = `
                 <tr class="td-empty-row">
-                    <td colspan="4">No matching activity found.</td>
+                    <td colspan="8">No matching student records found.</td>
                 </tr>`;
             return;
         }
 
         let html = '';
         rows.forEach(r => {
-            const dateStr = fmtDateTime(r.date);
-            const scoreHtml = r.score != null
-                ? `<span class="td-score ${scoreClass(r.score)}">${r.score}</span>`
-                : `<span class="td-score none">—</span>`;
-
             html += `
             <tr>
                 <td><span class="td-student-id">${r.studentId}</span></td>
                 <td><span class="td-student-name">${r.name}</span></td>
-                <td><span class="td-date-time">${dateStr}</span></td>
-                <td>${scoreHtml}</td>
+                <td><span class="td-section">${r.section}</span></td>
+                <td><span class="td-score ${scoreClass(r.stage1)}">${r.stage1} / 100</span></td>
+                <td><span class="td-score ${scoreClass(r.stage2)}">${r.stage2} / 100</span></td>
+                <td><span class="td-score ${scoreClass(r.stage3)}">${r.stage3} / 100</span></td>
+                <td><span class="td-score" style="color:#ffb800; font-weight:700;">${r.bonus} / 50</span></td>
+                <td><span class="td-score ${scoreClass(Math.round((r.total / 350) * 100))}" style="font-weight:800; color:var(--cyan);">${r.total} / 350</span></td>
             </tr>`;
         });
 
@@ -244,7 +277,7 @@
                 state.sortDir = state.sortDir === 'asc' ? 'desc' : 'asc';
             } else {
                 state.sortCol = col;
-                state.sortDir = col === 'date' ? 'desc' : 'asc';
+                state.sortDir = (col === 'name' || col === 'studentId' || col === 'section') ? 'asc' : 'desc';
             }
             elSortHeaders.forEach(h => {
                 h.classList.remove('sort-asc', 'sort-desc');
@@ -272,7 +305,7 @@
                     try { users = JSON.parse(rawUsers) || []; } catch (err) { users = []; }
 
                     users.forEach(u => {
-                        u.scores = { stage1: 0, stage2: 0, stage3: 0 };
+                        u.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
                         u.stageProgress = { stage1: false, stage2: false, stage3: false };
                         u.logs = [];
                     });
@@ -284,7 +317,7 @@
                     // Reset active session user's score if a student is logged in
                     const sessionData = JSON.parse(localStorage.getItem('convenire_session') || 'null');
                     if (sessionData && sessionData.role === 'student' && sessionData.user) {
-                        sessionData.user.scores = { stage1: 0, stage2: 0, stage3: 0 };
+                        sessionData.user.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
                         sessionData.user.stageProgress = { stage1: false, stage2: false, stage3: false };
                         sessionData.user.logs = [];
                         localStorage.setItem('convenire_session', JSON.stringify(sessionData));
@@ -295,6 +328,7 @@
                         localStorage.removeItem(`${s}_completed`);
                         localStorage.removeItem(`${s}_score`);
                     });
+                    localStorage.removeItem('stage3_bonus_score');
 
                     // Signal the game page to clear leaderboard (works same-tab and cross-tab)
                     localStorage.setItem('convenire_reset_flag', '1');
@@ -328,6 +362,7 @@
                 .catch(err => console.warn('[DB] Could not reach reset_records.php:', err));
 
                 // ── 3. Clear the in-memory DB cache so render() shows an empty table ──
+                dbStudents = [];
                 dbLogs = [];
 
                 render();
@@ -393,7 +428,7 @@
     // ─────────────────────────────────────────────────────────
     // INITIAL RENDER
     // ─────────────────────────────────────────────────────────
-    const defaultSortHeader = document.querySelector('th[data-sort="date"]');
+    const defaultSortHeader = document.querySelector('th[data-sort="total"]');
     if (defaultSortHeader) {
         defaultSortHeader.classList.add('sort-desc');
         const icon = defaultSortHeader.querySelector('.td-sort-icon');
@@ -401,6 +436,6 @@
     }
 
     render();
-    fetchDbLogs();
+    fetchDbData();
 
 })();

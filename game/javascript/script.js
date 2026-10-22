@@ -40,7 +40,7 @@
             category: "Core Hardware & Sockets",
             desc: "Mount the CPU, RAM modules, GPU, and PSU cables into their precision motherboard sockets.",
             icon: "🖥️",
-            timeLimit: 120,
+            timeLimit: 90,
             maxScore: "100 PTS",
             tags: ["Hardware Sockets", "RAM & PCIe"],
             unlocked: true,
@@ -54,7 +54,7 @@
             category: "Peripheral Connectivity",
             desc: "Identify, analyze, and match HDMI, DisplayPort, USB-C, Ethernet, Audio, and legacy peripheral ports.",
             icon: "🔌",
-            timeLimit: 90,
+            timeLimit: 70,
             maxScore: "100 PTS",
             tags: ["Port Recognition", "I/O Interface"],
             unlocked: stage1Completed,
@@ -68,10 +68,10 @@
             category: "Networking & Cabling",
             desc: "Strip jacket, align T568A/T568B leads, squeeze the crimper, and verify dual-end 16-pin continuity.",
             icon: "🛠️",
-            timeLimit: 120,
+            timeLimit: 60,
             maxScore: "150+ PTS",
             tags: ["T568A / T568B", "16-Pin Tester"],
-            unlocked: true,
+            unlocked: stage1Completed && stage2Completed,
             completed: stage3Completed,
             score: localStorage.getItem('stage3_score') || '0',
             accent: "emerald"
@@ -228,6 +228,8 @@
         const st2Status = document.getElementById('playerStg2Status');
         const st3ScoreElem = document.getElementById('playerStg3Score');
         const st3Status = document.getElementById('playerStg3Status');
+        const bonusScoreElem = document.getElementById('playerBonusScore');
+        const bonusStatus = document.getElementById('playerBonusStatus');
         const grandTotalElem = document.getElementById('playerGrandTotal');
         const leaderboardList = document.getElementById('simpleLeaderboardList');
 
@@ -260,16 +262,22 @@
             if (cardName) cardName.textContent = fullName.toUpperCase();
             if (cardMeta) cardMeta.textContent = `Student ID: ${user.studentId || 'N/A'}${sectionStr}`;
 
-            const s1 = parseInt(user.scores?.stage1) || 0;
-            const s2 = parseInt(user.scores?.stage2) || 0;
-            const s3 = Math.min(100, parseInt(user.scores?.stage3) || 0);
-            const totalScore = window.AuthEngine ? window.AuthEngine.calculateTotalScore(user) : (s1 + s2 + s3);
-            const rankInfo = window.AuthEngine ? window.AuthEngine.getTechnicianRank(totalScore) : { tier: 'RANKED', title: 'Technician', icon: '⚡', percent: Math.round((totalScore / 300) * 100) };
+            const s1 = Math.min(100, Math.max(parseInt(user.scores?.stage1) || 0, parseInt(localStorage.getItem('stage1_score')) || 0));
+            const s2 = Math.min(100, Math.max(parseInt(user.scores?.stage2) || 0, parseInt(localStorage.getItem('stage2_score')) || 0));
+            const s3 = Math.min(100, Math.max(parseInt(user.scores?.stage3) || 0, parseInt(localStorage.getItem('stage3_score')) || 0));
+            const sBonus = Math.min(50, Math.max(parseInt(user.scores?.stage3_bonus) || 0, parseInt(localStorage.getItem('stage3_bonus_score')) || 0));
+            if (!user.scores) user.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
+            user.scores.stage1 = s1;
+            user.scores.stage2 = s2;
+            user.scores.stage3 = s3;
+            user.scores.stage3_bonus = sBonus;
+            const totalScore = window.AuthEngine ? window.AuthEngine.calculateTotalScore(user) : (s1 + s2 + s3 + sBonus);
+            const rankInfo = window.AuthEngine ? window.AuthEngine.getTechnicianRank(totalScore) : { tier: 'RANKED', title: 'Technician', icon: '⚡', percent: Math.round((totalScore / 350) * 100) };
 
             let gradeLetter = 'GRADE C';
-            if (totalScore >= 270) gradeLetter = 'GRADE S (MASTER)';
-            else if (totalScore >= 225) gradeLetter = 'GRADE A (SENIOR)';
-            else if (totalScore >= 180) gradeLetter = 'GRADE B (CERTIFIED)';
+            if (totalScore >= 315) gradeLetter = 'GRADE S (MASTER)';
+            else if (totalScore >= 262) gradeLetter = 'GRADE A (SENIOR)';
+            else if (totalScore >= 210) gradeLetter = 'GRADE B (CERTIFIED)';
             else if (totalScore > 0) gradeLetter = 'GRADE C (APPRENTICE)';
             else gradeLetter = 'UNRANKED';
 
@@ -294,7 +302,13 @@
                 st3Status.textContent = user.stageProgress?.stage3 ? '✅ PASSED' : '🔒 INCOMPLETE';
             }
 
-            if (grandTotalElem) grandTotalElem.textContent = `${totalScore} / 300 PTS`;
+            if (bonusScoreElem) bonusScoreElem.textContent = `${sBonus} / 50 PTS`;
+            if (bonusStatus) {
+                bonusStatus.className = sBonus > 0 ? 'stage-status status-passed' : 'stage-status status-incomplete';
+                bonusStatus.textContent = sBonus > 0 ? '⚡ BONUS PASS' : '🔒 INCOMPLETE';
+            }
+
+            if (grandTotalElem) grandTotalElem.textContent = `${totalScore} / 350 PTS`;
         } else if (session && session.role === 'admin') {
             if (cardAvatar) cardAvatar.textContent = '👑';
             if (cardName) cardName.textContent = `ADMINISTRATOR (${session.user.name || 'Admin'})`;
@@ -308,7 +322,9 @@
             if (st2Status) { st2Status.className = 'stage-status status-passed'; st2Status.textContent = '✅ MASTERED'; }
             if (st3ScoreElem) st3ScoreElem.textContent = '100 / 100 PTS';
             if (st3Status) { st3Status.className = 'stage-status status-passed'; st3Status.textContent = '✅ MASTERED'; }
-            if (grandTotalElem) grandTotalElem.textContent = '300 / 300 PTS';
+            if (bonusScoreElem) bonusScoreElem.textContent = '50 / 50 PTS';
+            if (bonusStatus) { bonusStatus.className = 'stage-status status-passed'; bonusStatus.textContent = '⚡ MASTERED'; }
+            if (grandTotalElem) grandTotalElem.textContent = '350 / 350 PTS';
         } else {
             // Guest Mode - Accurately read local guest progress
             if (cardAvatar) cardAvatar.textContent = '👤';
@@ -318,16 +334,17 @@
             const g1 = Math.min(100, parseInt(localStorage.getItem('stage1_score')) || 0);
             const g2 = Math.min(100, parseInt(localStorage.getItem('stage2_score')) || 0);
             const g3 = Math.min(100, parseInt(localStorage.getItem('stage3_score')) || 0);
+            const gBonus = Math.min(50, parseInt(localStorage.getItem('stage3_bonus_score')) || 0);
             const g1Done = localStorage.getItem('stage1_completed') === 'true';
             const g2Done = localStorage.getItem('stage2_completed') === 'true';
             const g3Done = localStorage.getItem('stage3_completed') === 'true';
-            const guestTotal = g1 + g2 + g3;
+            const guestTotal = g1 + g2 + g3 + gBonus;
 
             let gradeLetter = 'UNRANKED';
             let rankTitleStr = '🔒 Sign In to Record';
-            if (guestTotal >= 270) { gradeLetter = 'GRADE S (MASTER)'; rankTitleStr = '🌟 Master Systems Architect'; }
-            else if (guestTotal >= 225) { gradeLetter = 'GRADE A (SENIOR)'; rankTitleStr = '🥇 Senior Specialist'; }
-            else if (guestTotal >= 180) { gradeLetter = 'GRADE B (CERTIFIED)'; rankTitleStr = '🥈 Certified Tech'; }
+            if (guestTotal >= 315) { gradeLetter = 'GRADE S (MASTER)'; rankTitleStr = '🌟 Master Systems Architect'; }
+            else if (guestTotal >= 262) { gradeLetter = 'GRADE A (SENIOR)'; rankTitleStr = '🥇 Senior Specialist'; }
+            else if (guestTotal >= 210) { gradeLetter = 'GRADE B (CERTIFIED)'; rankTitleStr = '🥈 Certified Tech'; }
             else if (guestTotal > 0) { gradeLetter = 'GRADE C (APPRENTICE)'; rankTitleStr = '🥉 Junior Apprentice'; }
 
             if (rankGrade) rankGrade.textContent = gradeLetter;
@@ -351,7 +368,13 @@
                 st3Status.textContent = g3Done ? '✅ PASSED' : '🔒 INCOMPLETE';
             }
 
-            if (grandTotalElem) grandTotalElem.textContent = `${guestTotal} / 300 PTS`;
+            if (bonusScoreElem) bonusScoreElem.textContent = `${gBonus} / 50 PTS`;
+            if (bonusStatus) {
+                bonusStatus.className = gBonus > 0 ? 'stage-status status-passed' : 'stage-status status-incomplete';
+                bonusStatus.textContent = gBonus > 0 ? '⚡ BONUS PASS' : '🔒 INCOMPLETE';
+            }
+
+            if (grandTotalElem) grandTotalElem.textContent = `${guestTotal} / 350 PTS`;
         }
 
         // Render Top Leaderboard Scores Table
@@ -371,7 +394,8 @@
                 const s1 = Math.min(100, parseInt(u.scores?.stage1) || 0);
                 const s2 = Math.min(100, parseInt(u.scores?.stage2) || 0);
                 const s3 = Math.min(100, parseInt(u.scores?.stage3) || 0);
-                const total = s1 + s2 + s3;
+                const sBonus = Math.min(50, parseInt(u.scores?.stage3_bonus) || 0);
+                const total = s1 + s2 + s3 + sBonus;
                 const name = [u.firstName, u.lastName].filter(Boolean).join(' ') || u.studentId;
                 const isCurrent = (currentStudentId && u.studentId === currentStudentId);
                 const rowClass = isCurrent ? 'active-user-row' : '';
@@ -382,9 +406,9 @@
                 else if (i === 2) medal = '🥉 3';
 
                 let gradeBadge = '<span class="badge-grade-u">UNRANKED</span>';
-                if (total >= 270) gradeBadge = '<span class="badge-grade-s">GRADE S</span>';
-                else if (total >= 225) gradeBadge = '<span class="badge-grade-a">GRADE A</span>';
-                else if (total >= 180) gradeBadge = '<span class="badge-grade-b">GRADE B</span>';
+                if (total >= 315) gradeBadge = '<span class="badge-grade-s">GRADE S</span>';
+                else if (total >= 262) gradeBadge = '<span class="badge-grade-a">GRADE A</span>';
+                else if (total >= 210) gradeBadge = '<span class="badge-grade-b">GRADE B</span>';
                 else if (total > 0) gradeBadge = '<span class="badge-grade-c">GRADE C</span>';
 
                 lbHtml += `
@@ -395,12 +419,13 @@
                         <td>${s1}</td>
                         <td>${s2}</td>
                         <td>${s3}</td>
+                        <td><strong style="color:#ffb800;">${sBonus}</strong></td>
                         <td class="lb-total-score">${total}</td>
                         <td>${gradeBadge}</td>
                     </tr>
                 `;
             });
-            leaderboardList.innerHTML = lbHtml || '<tr><td colspan="8" style="text-align:center; padding:12px; color:#888;">No student scores recorded yet</td></tr>';
+            leaderboardList.innerHTML = lbHtml || '<tr><td colspan="9" style="text-align:center; padding:12px; color:#888;">No student scores recorded yet</td></tr>';
         }
 
         // Asynchronously fetch live MySQL leaderboard and sync state
@@ -420,7 +445,7 @@
                                 u.studentId && String(u.studentId).trim().toLowerCase() === String(dbStudent.studentId).trim().toLowerCase()
                             );
                             if (found) {
-                                if (!found.scores) found.scores = { stage1: 0, stage2: 0, stage3: 0 };
+                                if (!found.scores) found.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
                                 if (!found.stageProgress) found.stageProgress = { stage1: false, stage2: false, stage3: false };
                                 [1, 2, 3].forEach(st => {
                                     const dbScore = dbStudent.scores?.[`stage${st}`] || 0;
@@ -430,6 +455,11 @@
                                         usersUpdated = true;
                                     }
                                 });
+                                const dbBonus = dbStudent.scores?.stage3_bonus || 0;
+                                if (dbBonus > (found.scores.stage3_bonus || 0)) {
+                                    found.scores.stage3_bonus = dbBonus;
+                                    usersUpdated = true;
+                                }
                             }
                         });
 
@@ -446,7 +476,8 @@
                                     const s1 = parseInt(refreshed.scores?.stage1) || 0;
                                     const s2 = parseInt(refreshed.scores?.stage2) || 0;
                                     const s3 = Math.min(100, parseInt(refreshed.scores?.stage3) || 0);
-                                    const totalScore = s1 + s2 + s3;
+                                    const sBonus = Math.min(50, parseInt(refreshed.scores?.stage3_bonus) || 0);
+                                    const totalScore = s1 + s2 + s3 + sBonus;
                                     if (st1ScoreElem) st1ScoreElem.textContent = `${s1} / 100 PTS`;
                                     if (st1Status) {
                                         st1Status.className = refreshed.stageProgress?.stage1 ? 'stage-status status-passed' : 'stage-status status-incomplete';
@@ -462,11 +493,16 @@
                                         st3Status.className = refreshed.stageProgress?.stage3 ? 'stage-status status-passed' : 'stage-status status-incomplete';
                                         st3Status.textContent = refreshed.stageProgress?.stage3 ? '✅ PASSED' : '🔒 INCOMPLETE';
                                     }
-                                    if (grandTotalElem) grandTotalElem.textContent = `${totalScore} / 300 PTS`;
+                                    if (bonusScoreElem) bonusScoreElem.textContent = `${sBonus} / 50 PTS`;
+                                    if (bonusStatus) {
+                                        bonusStatus.className = sBonus > 0 ? 'stage-status status-passed' : 'stage-status status-incomplete';
+                                        bonusStatus.textContent = sBonus > 0 ? '⚡ BONUS PASS' : '🔒 INCOMPLETE';
+                                    }
+                                    if (grandTotalElem) grandTotalElem.textContent = `${totalScore} / 350 PTS`;
                                     let gradeLetter = 'GRADE C';
-                                    if (totalScore >= 270) gradeLetter = 'GRADE S (MASTER)';
-                                    else if (totalScore >= 225) gradeLetter = 'GRADE A (SENIOR)';
-                                    else if (totalScore >= 180) gradeLetter = 'GRADE B (CERTIFIED)';
+                                    if (totalScore >= 315) gradeLetter = 'GRADE S (MASTER)';
+                                    else if (totalScore >= 262) gradeLetter = 'GRADE A (SENIOR)';
+                                    else if (totalScore >= 210) gradeLetter = 'GRADE B (CERTIFIED)';
                                     else if (totalScore > 0) gradeLetter = 'GRADE C (APPRENTICE)';
                                     else gradeLetter = 'UNRANKED';
                                     if (rankGrade) rankGrade.textContent = gradeLetter;
@@ -481,7 +517,8 @@
                             const s1 = Math.min(100, parseInt(u.scores?.stage1) || 0);
                             const s2 = Math.min(100, parseInt(u.scores?.stage2) || 0);
                             const s3 = Math.min(100, parseInt(u.scores?.stage3) || 0);
-                            const total = s1 + s2 + s3;
+                            const sBonus = Math.min(50, parseInt(u.scores?.stage3_bonus) || 0);
+                            const total = s1 + s2 + s3 + sBonus;
                             const isCurrent = (currentStudentId && String(u.studentId).trim().toLowerCase() === String(currentStudentId).trim().toLowerCase());
                             const rowClass = isCurrent ? 'active-user-row' : '';
 
@@ -491,9 +528,9 @@
                             else if (i === 2) medal = '🥉 3';
 
                             let gradeBadge = '<span class="badge-grade-u">UNRANKED</span>';
-                            if (total >= 270) gradeBadge = '<span class="badge-grade-s">GRADE S</span>';
-                            else if (total >= 225) gradeBadge = '<span class="badge-grade-a">GRADE A</span>';
-                            else if (total >= 180) gradeBadge = '<span class="badge-grade-b">GRADE B</span>';
+                            if (total >= 315) gradeBadge = '<span class="badge-grade-s">GRADE S</span>';
+                            else if (total >= 262) gradeBadge = '<span class="badge-grade-a">GRADE A</span>';
+                            else if (total >= 210) gradeBadge = '<span class="badge-grade-b">GRADE B</span>';
                             else if (total > 0) gradeBadge = '<span class="badge-grade-c">GRADE C</span>';
 
                             dbHtml += `
@@ -504,6 +541,7 @@
                                     <td>${s1}</td>
                                     <td>${s2}</td>
                                     <td>${s3}</td>
+                                    <td><strong style="color:#ffb800;">${sBonus}</strong></td>
                                     <td class="lb-total-score">${total}</td>
                                     <td>${gradeBadge}</td>
                                 </tr>
@@ -588,11 +626,15 @@
             s3Score = localStorage.getItem('stage3_score') || '0';
         }
 
+        stages[0].unlocked = true;
         stages[0].completed = s1Done;
         stages[0].score = s1Score;
+
         stages[1].unlocked = s1Done;
         stages[1].completed = s2Done;
         stages[1].score = s2Score;
+
+        stages[2].unlocked = s1Done && s2Done;
         stages[2].completed = s3Done;
         stages[2].score = s3Score;
 
@@ -601,9 +643,10 @@
             const isLocked = !st.unlocked;
             const lockClass = isLocked ? 'locked' : '';
             const statusClass = st.completed ? 'status-pass' : (isLocked ? 'status-lock' : 'status-ready');
+            const reqStage = idx === 1 ? 'STAGE 1' : 'STAGE 2';
             const statusBadgeText = st.completed
                 ? `PASSED (${st.score} PTS) ✅`
-                : (isLocked ? `LOCKED (BEAT STAGE 1) 🔒` : `READY FOR DEPLOYMENT ⚡`);
+                : (isLocked ? `LOCKED (BEAT ${reqStage}) 🔒` : `READY FOR DEPLOYMENT ⚡`);
             const btnText = isLocked
                 ? `LOCKED 🔒`
                 : (st.completed ? `REPLAY MISSION ➔` : `DEPLOY MISSION ➔`);
@@ -680,7 +723,8 @@
                         window.location.href = 'stage3.html';
                     }
                 } else {
-                    showAlert("🔒 Stage Locked", "Complete Stage 1 to unlock Stage 2!");
+                    const req = idx == 1 ? "Stage 1" : "Stage 2";
+                    showAlert("🔒 Stage Locked", `Complete ${req} to unlock Stage ${stages[idx]?.number || (parseInt(idx) + 1)}!`);
                 }
             });
         });

@@ -1,6 +1,21 @@
-(function() {
+(function () {
     // Authentication Session Guard - Require Login
     if (window.AuthEngine && !window.AuthEngine.getSession()) {
+        window.location.href = 'MainMenu.html';
+        return;
+    }
+
+    // Progression Guard - Require Stage 1 Completion
+    const s1Completed = (function () {
+        const session = window.AuthEngine ? window.AuthEngine.getSession() : null;
+        if (session && session.role === 'student' && session.user) {
+            return !!session.user.stageProgress?.stage1 || (parseInt(session.user.scores?.stage1) > 0);
+        }
+        return localStorage.getItem('stage1_completed') === 'true';
+    })();
+
+    if (!s1Completed) {
+        alert("🔒 Stage 2 is locked! Please unlock it by completing Stage 1 first.");
         window.location.href = 'MainMenu.html';
         return;
     }
@@ -21,7 +36,7 @@
     }
 
     const soundFx = {
-        blip: function() {
+        blip: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -36,9 +51,9 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.06);
-            } catch(e) {}
+            } catch (e) { }
         },
-        snap: function() {
+        snap: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -53,9 +68,9 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.12);
-            } catch(e) {}
+            } catch (e) { }
         },
-        powerHum: function() {
+        powerHum: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -70,9 +85,9 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.7);
-            } catch(e) {}
+            } catch (e) { }
         },
-        errorBuzz: function() {
+        errorBuzz: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -87,9 +102,9 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.25);
-            } catch(e) {}
+            } catch (e) { }
         },
-        speedBonus: function() {
+        speedBonus: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -104,12 +119,12 @@
                 gain.connect(ctx.destination);
                 osc.start();
                 osc.stop(ctx.currentTime + 0.3);
-            } catch(e) {}
+            } catch (e) { }
         },
-        quizRight: function() {
+        quizRight: function () {
             if (this.speedBonus) this.speedBonus();
         },
-        victoryChime: function() {
+        victoryChime: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -126,9 +141,9 @@
                     osc.start(ctx.currentTime + index * 0.1);
                     osc.stop(ctx.currentTime + index * 0.1 + 0.5);
                 });
-            } catch(e) {}
+            } catch (e) { }
         },
-        gameOver: function() {
+        gameOver: function () {
             try {
                 const ctx = getAudioContext();
                 if (!ctx) return;
@@ -189,7 +204,7 @@
                     osc.start(now + note.t);
                     osc.stop(now + note.t + note.d);
                 });
-            } catch(e) {}
+            } catch (e) { }
         }
     };
 
@@ -201,9 +216,10 @@
     const errorSound = document.getElementById("errorSound");
     const dragSound = document.getElementById("dragSound");
     // Game state
+    const STAGE2_DURATION = 70; // 70 seconds duration (1:10)
     let gameActive = true;
     let timerInterval = null;
-    let timeLeft = 90;
+    let timeLeft = STAGE2_DURATION;
     let score = 0;
     let zoneAssignments = {};
     let powerUsed = false;
@@ -418,14 +434,14 @@
         if (gameMusic) {
             gameMusic.volume = 0.25;
             gameMusic.loop = true;
-            
+
             let playPromise = gameMusic.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     console.log("Stage 2 music playing");
                 }).catch(() => {
                     const enableAudio = () => {
-                        gameMusic.play().catch(()=>{});
+                        gameMusic.play().catch(() => { });
                         document.removeEventListener('click', enableAudio);
                         document.removeEventListener('keydown', enableAudio);
                     };
@@ -471,7 +487,7 @@
     function dragStart(e) {
         const component = e.target.closest('.component');
         if (!component) return;
-        
+
         if (!gameActive || powerUsed || isGameOver || component.classList.contains('disabled')) {
             e.preventDefault();
             return false;
@@ -483,9 +499,9 @@
         soundFx.blip();
         if (dragSound) {
             dragSound.currentTime = 0;
-            dragSound.play().catch(() => {});
+            dragSound.play().catch(() => { });
         }
-        
+
         e.dataTransfer.setData('text/plain', component.id);
         component.classList.add('dragging');
     }
@@ -503,25 +519,25 @@
     function handlePortPlaced(draggedId, accept, draggedEl, zone) {
         if (draggedId === accept) {
             const eduText = educationalPortInfo[draggedId] || `${draggedEl.querySelector('.comp-name')?.textContent || draggedId} connected!`;
-            
+
             // Speed scoring calculation (100 PTS Max Scale):
             // Base placement score: 4 pts (10 x 4 = 40 pts)
-            // Speed bonus: up to +3 pts based on remaining time (timeLeft / 90 * 3) -> (10 x 3 = 30 pts)
+            // Speed bonus: up to +3 pts based on remaining time (timeLeft / 70 * 3) -> (10 x 3 = 30 pts)
             // Max from port connections: 70 pts
             const basePts = 4;
-            const speedBonus = Math.max(0, Math.round((timeLeft / 90) * 3));
+            const speedBonus = Math.max(0, Math.round((timeLeft / STAGE2_DURATION) * 3));
             const earnedPts = basePts + speedBonus;
-            
+
             score = Math.min(100, score + earnedPts);
             updateScore();
             soundFx.snap();
             if (speedBonus >= 2) {
                 soundFx.speedBonus();
             }
-            
+
             if (dropSound) {
                 dropSound.currentTime = 0;
-                dropSound.play().catch(() => {});
+                dropSound.play().catch(() => { });
             }
 
             // Visual feedback & floating arcade speed indicator
@@ -535,10 +551,10 @@
         } else {
             gameMessage.innerText = `🔧 ${draggedEl.querySelector('.comp-name')?.textContent || draggedId} placed in socket (verify with POWER)`;
             soundFx.snap();
-            
+
             if (dropSound) {
                 dropSound.currentTime = 0;
-                dropSound.play().catch(() => {});
+                dropSound.play().catch(() => { });
             }
         }
 
@@ -561,7 +577,7 @@
 
     function drop(e) {
         e.preventDefault();
-        
+
         if (!gameActive || powerUsed || isGameOver) {
             gameMessage.innerText = '⚠️ Cannot connect peripheral right now!';
             soundFx.errorBuzz();
@@ -570,39 +586,39 @@
 
         const zone = e.target.closest('.drop-zone');
         if (!zone) return;
-        
+
         const draggedId = e.dataTransfer.getData('text/plain');
         if (!draggedId) return;
-        
+
         const draggedEl = document.getElementById(draggedId);
         if (!draggedEl) return;
-        
+
         const accept = zone.dataset.accept;
-        
+
         if (draggedEl.classList.contains('disabled')) {
             gameMessage.innerText = '⚠️ Connector already installed!';
             soundFx.errorBuzz();
             return;
         }
-        
+
         if (zoneAssignments[accept]) {
             gameMessage.innerText = '⚠️ This rear port already has a cable plugged in!';
             soundFx.errorBuzz();
             return;
         }
-        
+
         zoneAssignments[accept] = draggedId;
-        
+
         draggedEl.classList.add('disabled');
         draggedEl.draggable = false;
         draggedEl.style.opacity = '0.32';
-        
+
         const img = componentImages[draggedId];
         if (img) {
             zone.classList.add('occupied');
             zone.innerHTML = `<img src="${img.src}" alt="${draggedId}" style="width:100%; height:100%; object-fit:contain; filter:drop-shadow(0 4px 10px rgba(0,0,0,0.9)); opacity:1;">`;
         }
-        
+
         handlePortPlaced(draggedId, accept, draggedEl, zone);
     }
 
@@ -623,7 +639,7 @@
         const shuffled = shuffleArray(components);
         componentContainer.innerHTML = '';
         shuffled.forEach(comp => componentContainer.appendChild(comp));
-        
+
         setTimeout(() => {
             document.querySelectorAll('.component').forEach((c, idx) => {
                 setTimeout(() => c.classList.add('show'), idx * 50);
@@ -694,7 +710,7 @@
                     if (score > 0 && window.AuthEngine && typeof window.AuthEngine.logStageCompletion === 'function') {
                         try {
                             window.AuthEngine.logStageCompletion(2, score, 'Time Expired');
-                        } catch (err) {}
+                        } catch (err) { }
                     }
                     showAlert("⏰ Time's Up!", `Rear I/O connection window expired.\nEarned Score: ${score} PTS.\nClick RESET STAGE to retry for a higher score!`, "⏳", "OKAY");
                     dropZones.forEach(z => z.classList.remove("active"));
@@ -722,7 +738,7 @@
     // CUSTOM CYBER ALERT MODAL
     // ===================================================
     let alertConfirmCallback = null;
-    window.closeAlert = function() {
+    window.closeAlert = function () {
         if (alertBox) alertBox.style.display = "none";
         const confirmBtn = alertBox ? alertBox.querySelector('.alert-confirm-btn') : null;
         if (confirmBtn) confirmBtn.textContent = "ACKNOWLEDGE";
@@ -732,7 +748,7 @@
             try { cb(); } catch (err) { console.error("Alert callback error:", err); }
         }
         if (gameMusic && gameMusic.paused && !gameWon && !isGameOver && gameActive) {
-            gameMusic.play().catch(() => {});
+            gameMusic.play().catch(() => { });
         }
     };
 
@@ -754,26 +770,26 @@
         soundFx.blip();
         if (clickSound) {
             clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
+            clickSound.play().catch(() => { });
         }
 
         if (isGameOver) {
             showAlert("💀 GAME OVER", "The system is offline due to fatal signal collision.\n\nPlease click RESET STAGE to start a new game.", "💀", "OKAY");
             return;
         }
-        
+
         if (!gameActive) {
             showAlert("Cannot Power On", "Start or reset the game first!", "⚠️");
             return;
         }
-        
+
         if (powerUsed) {
             showAlert("Already Powered", "System diagnostics completed. Reset to test again.", "ℹ️");
             return;
         }
 
         powerUsed = true;
-        
+
         let correctCount = 0;
         let wrongCount = 0;
         let wrongPlacements = [];
@@ -806,7 +822,7 @@
         dropZones.forEach(zone => {
             const accept = zone.dataset.accept;
             const placedId = zoneAssignments[accept];
-            
+
             if (placedId === accept) {
                 correctCount++;
             } else {
@@ -816,9 +832,9 @@
                 wrongPlacements.push({ zone, accept, placedId });
             }
         });
-        
+
         updateScore();
-        
+
         if (correctCount === 10) {
             // VICTORY - All dropzones highlight green
             dropZones.forEach(zone => zone.classList.add("correct"));
@@ -830,19 +846,19 @@
             soundFx.victoryChime();
             if (successSound) {
                 successSound.currentTime = 0;
-                successSound.play().catch(() => {});
+                successSound.play().catch(() => { });
             }
             gameWon = true;
             gameActive = false;
             clearInterval(timerInterval);
             timerInterval = null;
-    
+
             if (powerBtn) powerBtn.classList.add("on");
             if (board) board.style.boxShadow = '0 0 35px var(--emerald-primary), 0 0 70px rgba(0,255,136,0.3)';
-    
+
             // Power POST Check & Remaining Time Bonus (Max 100 PTS Scale):
             // +10 PTS for flawless POST + up to +20 PTS for remaining time
-            const timeBonus = Math.min(20, Math.round((timeLeft / 90) * 20));
+            const timeBonus = Math.min(20, Math.round((timeLeft / STAGE2_DURATION) * 20));
             score = Math.min(100, score + 10 + timeBonus);
             updateScore();
 
@@ -855,7 +871,7 @@
                     console.error("AuthEngine error in stage2:", authErr);
                 }
             }
-            
+
             if (nextStageBadge) nextStageBadge.textContent = "UNLOCKED ➔";
             if (nextStageBtn) {
                 nextStageBtn.style.borderColor = "var(--emerald-primary)";
@@ -877,7 +893,7 @@
                     }
                 );
             }, 600);
-            
+
         } else {
             // GAME OVER - POWER-ON FAILED
             isGameOver = true;
@@ -898,17 +914,17 @@
             if (score > 0 && window.AuthEngine && typeof window.AuthEngine.logStageCompletion === 'function') {
                 try {
                     window.AuthEngine.logStageCompletion(2, score, 'Power Failed');
-                } catch (authErr) {}
+                } catch (authErr) { }
             }
             soundFx.gameOver();
             if (errorSound) {
                 errorSound.currentTime = 0;
-                errorSound.play().catch(() => {});
+                errorSound.play().catch(() => { });
             }
 
             if (powerBtn) powerBtn.classList.remove("on");
             if (board) board.style.boxShadow = ''; // No error glow on board to keep it hard to identify
-        
+
             // Remove any error / correct indicator on all dropzones - make it hard for player to identify
             dropZones.forEach(zone => {
                 zone.classList.remove("wrong", "correct", "active", "drag-over");
@@ -961,16 +977,16 @@
     function resetStage() {
         soundFx.blip();
         if (timerInterval) clearInterval(timerInterval);
-        
+
         isGameOver = false;
         gameActive = true;
         powerUsed = false;
         powerAttempted = false;
         gameWon = false;
         score = 0;
-        timeLeft = 90;
+        timeLeft = STAGE2_DURATION;
         zoneAssignments = {};
-        
+
         if (board) {
             board.style.boxShadow = '';
             board.classList.add('show');
@@ -986,20 +1002,20 @@
             resetStageBtn.style.borderColor = "";
             resetStageBtn.style.boxShadow = "";
         }
-        
+
         resetComponentStates();
         clearDropZones();
         shuffleComponents();
-        
+
         updateScore();
         updateTimer();
         updatePlacedCounter();
         startTimer();
-        
+
         if (gameMessage) gameMessage.innerText = 'Connect all 10 hardware peripheral cables to the rear panel and initiate power.';
         if (powerBtn) powerBtn.classList.remove("on");
         if (gameMusic && gameMusic.paused && !gameWon) {
-            gameMusic.play().catch(() => {});
+            gameMusic.play().catch(() => { });
         }
     }
 
@@ -1053,7 +1069,7 @@
                 { sourceId: "usb", targetZoneAccept: "usb", instruction: "Plug USB Ports into Back Panel Dual USB Slot!" },
                 { sourceId: "hdmi", targetZoneAccept: "hdmi", instruction: "Plug HDMI Port into Digital Display Slot!" },
                 { sourceId: "ethernet", targetZoneAccept: "ethernet", instruction: "Plug Ethernet Port into Gigabit LAN Slot!" }
-            ], function() {
+            ], function () {
                 if (gameMessage) gameMessage.innerText = "💡 Tutorial complete! Connect all remaining back panel peripheral ports.";
             });
         }
@@ -1099,7 +1115,7 @@
 
     const storyBriefBtn = document.getElementById('storyBriefBtn');
     if (storyBriefBtn) {
-        storyBriefBtn.addEventListener('click', () => playStage2Story(function() {}));
+        storyBriefBtn.addEventListener('click', () => playStage2Story(function () { }));
     }
 
     // Initialize Game & Component Tooltips

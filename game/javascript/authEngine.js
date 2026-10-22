@@ -37,6 +37,7 @@ window.AuthEngine = (function () {
                     if (u.scores.stage1 > 100) { u.scores.stage1 = 100; updated = true; }
                     if (u.scores.stage2 > 100) { u.scores.stage2 = 100; updated = true; }
                     if (u.scores.stage3 > 100) { u.scores.stage3 = 100; updated = true; }
+                    if (u.scores.stage3_bonus > 50) { u.scores.stage3_bonus = 50; updated = true; }
                 }
             });
             if (updated) {
@@ -801,7 +802,8 @@ window.AuthEngine = (function () {
             scores: {
                 stage1: 0,
                 stage2: 0,
-                stage3: 0
+                stage3: 0,
+                stage3_bonus: 0
             },
             logs: []
         };
@@ -833,7 +835,7 @@ window.AuthEngine = (function () {
         const index = users.findIndex(u => u.studentId === studentId || u.id === studentId);
         if (index !== -1) {
             users[index].stageProgress = { stage1: false, stage2: false, stage3: false };
-            users[index].scores = { stage1: 0, stage2: 0, stage3: 0 };
+            users[index].scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
             users[index].logs = [];
             saveUsers(users);
 
@@ -862,7 +864,7 @@ window.AuthEngine = (function () {
     }
 
     // Record Stage Completion
-    function logStageCompletion(stageNumber, score, timeSpent) {
+    function logStageCompletion(stageNumber, score, timeSpent, bonusScore) {
         let validScore = (typeof score === 'number' && !isNaN(score)) ? Math.max(0, score) : (parseInt(score) || 0);
         const stageLimit = 100;
         validScore = Math.min(stageLimit, Math.max(0, validScore));
@@ -870,6 +872,20 @@ window.AuthEngine = (function () {
         // Update local storage stage scores
         localStorage.setItem(`stage${stageNumber}_completed`, 'true');
         localStorage.setItem(`stage${stageNumber}_score`, String(validScore));
+
+        let validBonus = null;
+        if (stageNumber === 3) {
+            if (bonusScore !== undefined && bonusScore !== null) {
+                validBonus = (typeof bonusScore === 'number' && !isNaN(bonusScore)) ? Math.max(0, bonusScore) : (parseInt(bonusScore) || 0);
+                validBonus = Math.min(50, Math.max(0, validBonus));
+                localStorage.setItem('stage3_bonus_score', String(validBonus));
+            } else {
+                const storedBonus = parseInt(localStorage.getItem('stage3_bonus_score'));
+                if (!isNaN(storedBonus)) {
+                    validBonus = Math.min(50, Math.max(0, storedBonus));
+                }
+            }
+        }
 
         const session = getSession();
         if (!session || session.role !== 'student') return;
@@ -893,7 +909,7 @@ window.AuthEngine = (function () {
                 lastName: session.user.lastName || '',
                 name: session.user.name || session.user.fullName || studentId,
                 section: session.user.section || 'N/A',
-                scores: { stage1: 0, stage2: 0, stage3: 0 },
+                scores: { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 },
                 stageProgress: { stage1: false, stage2: false, stage3: false },
                 logs: []
             };
@@ -902,15 +918,19 @@ window.AuthEngine = (function () {
         }
 
         if (!user.stageProgress) user.stageProgress = { stage1: false, stage2: false, stage3: false };
-        if (!user.scores) user.scores = { stage1: 0, stage2: 0, stage3: 0 };
+        if (!user.scores) user.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
         if (!user.logs) user.logs = [];
 
         user.stageProgress[`stage${stageNumber}`] = true;
         user.scores[`stage${stageNumber}`] = Math.min(stageLimit, Math.max(user.scores[`stage${stageNumber}`] || 0, validScore));
+        if (validBonus !== null) {
+            user.scores.stage3_bonus = Math.min(50, Math.max(user.scores.stage3_bonus || 0, validBonus));
+        }
 
         user.logs.push({
             stage: stageNumber,
             score: validScore,
+            bonusScore: validBonus,
             timeSpent: timeSpent || 'N/A',
             timestamp: new Date().toLocaleString()
         });
@@ -923,20 +943,25 @@ window.AuthEngine = (function () {
         localStorage.setItem(SESSION_KEY, JSON.stringify(session));
 
         // --- Save directly to MySQL database via PHP ---
+        const payload = {
+            studentId: studentId,
+            stage: stageNumber,
+            score: validScore
+        };
+        if (validBonus !== null) {
+            payload.bonusScore = validBonus;
+        }
+
         fetch('php/save_progress.php', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                studentId: studentId,
-                stage: stageNumber,
-                score: validScore
-            }),
+            body: JSON.stringify(payload),
             keepalive: true
         })
             .then(r => r.json())
             .then(dbRes => {
                 if (dbRes.success) {
-                    console.log(`[DB] Stage ${stageNumber} score (${validScore} pts) saved. Log ID: ${dbRes.log_id}`);
+                    console.log(`[DB] Stage ${stageNumber} score (${validScore} pts${validBonus !== null ? ', bonus: ' + validBonus + ' pts' : ''}) saved. Log ID: ${dbRes.log_id}`);
                 } else {
                     console.warn('[DB] Progress note:', dbRes.message);
                 }
@@ -961,7 +986,7 @@ window.AuthEngine = (function () {
 
         const user = users[userIndex];
         if (!user.stageProgress) user.stageProgress = { stage1: false, stage2: false, stage3: false };
-        if (!user.scores) user.scores = { stage1: 0, stage2: 0, stage3: 0 };
+        if (!user.scores) user.scores = { stage1: 0, stage2: 0, stage3: 0, stage3_bonus: 0 };
 
         let changed = false;
         for (let st = 1; st <= 3; st++) {
@@ -979,6 +1004,12 @@ window.AuthEngine = (function () {
             }
         }
 
+        const savedBonus = parseInt(localStorage.getItem('stage3_bonus_score')) || 0;
+        if (savedBonus > (user.scores.stage3_bonus || 0)) {
+            user.scores.stage3_bonus = Math.min(50, savedBonus);
+            changed = true;
+        }
+
         if (changed) {
             users[userIndex] = user;
             saveUsers(users);
@@ -988,14 +1019,18 @@ window.AuthEngine = (function () {
             // Sync with MySQL in background
             for (let st = 1; st <= 3; st++) {
                 if (user.stageProgress[`stage${st}`] && user.scores[`stage${st}`] > 0) {
+                    const payload = {
+                        studentId: studentId,
+                        stage: st,
+                        score: user.scores[`stage${st}`]
+                    };
+                    if (st === 3 && user.scores.stage3_bonus !== undefined && user.scores.stage3_bonus !== null) {
+                        payload.bonusScore = Math.min(50, Math.max(0, parseInt(user.scores.stage3_bonus) || 0));
+                    }
                     fetch('php/save_progress.php', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            studentId: studentId,
-                            stage: st,
-                            score: user.scores[`stage${st}`]
-                        }),
+                        body: JSON.stringify(payload),
                         keepalive: true
                     }).catch(() => { });
                 }
@@ -1125,47 +1160,48 @@ window.AuthEngine = (function () {
         }
     }
 
-    // Scoring & Rank System Constants & Methods (Stage 1: 100 + Stage 2: 100 + Stage 3: 100 = 300)
-    const MAX_GAME_SCORE = 300;
+    // Scoring & Rank System Constants & Methods (Stage 1: 100 + Stage 2: 100 + Stage 3: 100 + Bonus: 50 = 350)
+    const MAX_GAME_SCORE = 350;
 
     function calculateTotalScore(user) {
         if (!user || !user.scores) return 0;
         const s1 = Math.min(100, parseInt(user.scores.stage1) || 0);
         const s2 = Math.min(100, parseInt(user.scores.stage2) || 0);
         const s3 = Math.min(100, parseInt(user.scores.stage3) || 0);
-        return s1 + s2 + s3;
+        const sBonus = Math.min(50, parseInt(user.scores.stage3_bonus) || 0);
+        return s1 + s2 + s3 + sBonus;
     }
 
     function getTechnicianRank(totalScore) {
         const score = totalScore || 0;
         const percent = Math.min(100, Math.round((score / MAX_GAME_SCORE) * 100));
 
-        if (score >= 270) {
+        if (score >= 315) {
             return {
                 title: 'Master Systems Architect',
                 tier: 'S-TIER (90-100%)',
                 icon: '🌟',
                 badgeClass: 'rank-badge-master',
                 percent: percent,
-                description: 'Flawless execution across hardware assembly, rear I/O protocols, and RJ45 cable termination.'
+                description: 'Flawless execution across hardware assembly, rear I/O protocols, Cat6 cable termination, and CSS theory.'
             };
-        } else if (score >= 225) {
+        } else if (score >= 262) {
             return {
                 title: 'Senior Systems Specialist',
                 tier: 'A-TIER (75-89%)',
                 icon: '🥇',
                 badgeClass: 'rank-badge-expert',
                 percent: percent,
-                description: 'Excellent technical capability with minor timing or socket placement tolerances.'
+                description: 'Excellent technical capability across hardware and cabling with strong theoretical foundation.'
             };
-        } else if (score >= 180) {
+        } else if (score >= 210) {
             return {
                 title: 'Certified Field Technician',
                 tier: 'B-TIER (60-74%)',
                 icon: '🥈',
                 badgeClass: 'rank-badge-certified',
                 percent: percent,
-                description: 'Solid hardware foundation; successfully brought all three test systems online.'
+                description: 'Solid hardware foundation; successfully brought all test systems and network interfaces online.'
             };
         } else if (score > 0) {
             return {
@@ -1183,7 +1219,7 @@ window.AuthEngine = (function () {
                 icon: '🔒',
                 badgeClass: 'rank-badge-unranked',
                 percent: 0,
-                description: 'Complete Stage 1, Stage 2, and Stage 3 to establish your official ranking.'
+                description: 'Complete Stage 1, Stage 2, Stage 3, and the CSS Theory Bonus to establish your official ranking.'
             };
         }
     }

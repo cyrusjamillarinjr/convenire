@@ -24,7 +24,7 @@ if ($studentIdParam !== null && trim($studentIdParam) !== '') {
         exit;
     }
 
-    $stmt->bind_param("ss", $studentIdParam, $studentIdParam);
+    $stmt->bind_param("s", $studentIdParam);
     if ($stmt->execute()) {
         $affected = $stmt->affected_rows;
         $stmt->close();
@@ -69,7 +69,7 @@ $deleteQuery = "DELETE FROM game_logs";
 if ($conn->query($deleteQuery)) {
     $affected = $conn->affected_rows;
     @$conn->query("ALTER TABLE game_logs AUTO_INCREMENT = 1");
-    @$conn->query("UPDATE student_records SET stage1_best_score = 0, stage2_best_score = 0, stage3_best_score = 0, total_sessions = 0");
+    @$conn->query("UPDATE student_records SET stage1_best_score = 0, stage2_best_score = 0, stage3_best_score = 0, stage3_bonus_score = 0, total_sessions = 0");
     $conn->close();
     echo json_encode([
         "success" => true,

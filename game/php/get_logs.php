@@ -6,6 +6,7 @@ header('Content-Type: application/json');
 require_once 'db_connect.php';
 
 $query = "SELECT g.log_id, g.stage, g.play_date, g.play_time, g.score, 
+                 IFNULL(g.bonus_score, 0) AS bonus_score,
                  g.student_id AS id_number, 
                  COALESCE(s.full_name, g.student_id) AS full_name, 
                  COALESCE(s.section, 'N/A') AS section 
@@ -19,15 +20,16 @@ $logs = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $logs[] = [
-            'log_id'     => intval($row['log_id']),
-            'stage'      => intval($row['stage']),
-            'play_date'  => $row['play_date'],
-            'play_time'  => $row['play_time'],
-            'score'      => intval($row['score']),
-            'id_number'  => $row['id_number'],
-            'full_name'  => $row['full_name'],
-            'section'    => $row['section'],
-            'timestamp'  => $row['play_date'] . ' ' . $row['play_time']
+            'log_id'      => intval($row['log_id']),
+            'stage'       => intval($row['stage']),
+            'play_date'   => $row['play_date'],
+            'play_time'   => $row['play_time'],
+            'score'       => intval($row['score']),
+            'bonus_score' => intval($row['bonus_score']),
+            'id_number'   => $row['id_number'],
+            'full_name'   => $row['full_name'],
+            'section'     => $row['section'],
+            'timestamp'   => $row['play_date'] . ' ' . $row['play_time']
         ];
     }
 }

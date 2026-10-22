@@ -1,8 +1,25 @@
 /* CONVENIRE - STAGE 3: REALISTIC 5-STEP RJ-45 CABLE CRIMPING SIMULATOR GAME ENGINE */
 
-(function() {
+(function () {
     // Authentication Session Guard - Require Login
     if (window.AuthEngine && !window.AuthEngine.getSession()) {
+        window.location.href = 'MainMenu.html';
+        return;
+    }
+
+    // Progression Guard - Require Stage 1 and Stage 2 Completion
+    const s2Completed = (function () {
+        const session = window.AuthEngine ? window.AuthEngine.getSession() : null;
+        if (session && session.role === 'student' && session.user) {
+            const u = session.user;
+            return (!!u.stageProgress?.stage1 || parseInt(u.scores?.stage1) > 0) &&
+                (!!u.stageProgress?.stage2 || parseInt(u.scores?.stage2) > 0);
+        }
+        return localStorage.getItem('stage1_completed') === 'true' && localStorage.getItem('stage2_completed') === 'true';
+    })();
+
+    if (!s2Completed) {
+        alert("🔒 Stage 3 is locked! Please unlock it by completing Stage 1 and Stage 2 first.");
         window.location.href = 'MainMenu.html';
         return;
     }
@@ -49,7 +66,8 @@
 
     let draggedWireId = null;
     let score = 0;
-    let timeLeft = 120;
+    const STAGE3_DURATION = 60; // 60 seconds duration (1:00)
+    let timeLeft = STAGE3_DURATION;
     let timerInterval = null;
 
     // Randomized Wire Pool Order (Randomized every restart)
@@ -82,7 +100,7 @@
     const labelPlugB = document.getElementById('labelPlugB');
     const ledCrimp = document.getElementById('ledCrimp');
     const labelCrimp = document.getElementById('labelCrimp');
-    
+
     // Step 1: Left Stripper Outer Jacket Elements
     const jacketStripPanel = document.getElementById('jacketStripPanel');
     const stripStatusBadge = document.getElementById('stripStatusBadge');
@@ -127,6 +145,7 @@
 
     let quizCurrentIdx = 0;
     let quizScore = 0;
+    let bonusScore = 0; // Separate Bonus Quiz Score (0 to 50 PTS)
     let quizAutoLaunchTimer = null;
 
     // 5 High-Yield Questions Tailored for Computer Systems Servicing (CSS NC II) Students
@@ -135,7 +154,7 @@
     // Correct answers are NOT sent to the browser; each answer is checked by the server.
     const BONUS_QUESTIONS_URL = 'php/get_bonus_questions.php';
     const BONUS_CHECK_URL = 'php/check_bonus_answer.php';
-    const BONUS_POINTS_PER_QUESTION = 8;
+    const BONUS_POINTS_PER_QUESTION = 10; // 5 questions x 10 pts = 50 PTS max bonus
     const OPTION_LETTERS = ['A', 'B', 'C', 'D'];
     let CSS_QUIZ_DATA = [];        // [{ id, order, q, options: [A, B, C, D] }] from the database
     let quizUnavailable = false;   // true when the DB questions could not be loaded
@@ -214,7 +233,7 @@
     function playClickSound() {
         if (clickSound) {
             clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
+            clickSound.play().catch(() => { });
         }
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -227,13 +246,13 @@
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + 0.05);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     function playSnipSound() {
         if (clickSound) {
             clickSound.currentTime = 0;
-            clickSound.play().catch(() => {});
+            clickSound.play().catch(() => { });
         }
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -247,13 +266,13 @@
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + 0.06);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     function playSparkSound() {
         if (dropSound) {
             dropSound.currentTime = 0;
-            dropSound.play().catch(() => {});
+            dropSound.play().catch(() => { });
         }
         try {
             const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -267,7 +286,7 @@
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + 0.08);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     function playCrimperSound() {
@@ -283,7 +302,7 @@
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + 0.25);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     function playBeep(freq, type, duration) {
@@ -298,7 +317,7 @@
             gain.connect(ctx.destination);
             osc.start();
             osc.stop(ctx.currentTime + duration);
-        } catch(e) {}
+        } catch (e) { }
     }
 
     function updateScoreDisplay() {
@@ -312,14 +331,14 @@
         if (gameMusic) {
             gameMusic.volume = 0.25;
             gameMusic.loop = true;
-            
+
             let playPromise = gameMusic.play();
             if (playPromise !== undefined) {
                 playPromise.then(() => {
                     console.log("Stage 3 background music playing");
                 }).catch(() => {
                     const enableAudio = () => {
-                        gameMusic.play().catch(()=>{});
+                        gameMusic.play().catch(() => { });
                         document.removeEventListener('click', enableAudio);
                         document.removeEventListener('keydown', enableAudio);
                     };
@@ -530,7 +549,7 @@
 
         if (errorSound) {
             errorSound.currentTime = 0;
-            errorSound.play().catch(() => {});
+            errorSound.play().catch(() => { });
         }
         playBeep(220, 'sawtooth', 0.5);
 
@@ -714,7 +733,7 @@
                 e.preventDefault();
                 if (errorSound) {
                     errorSound.currentTime = 0;
-                    errorSound.play().catch(() => {});
+                    errorSound.play().catch(() => { });
                 }
                 if (gameMessage) gameMessage.textContent = '⚠️ Step 1 Required: Click "STRIP OUTER JACKET ✂️" first!';
                 return;
@@ -723,7 +742,7 @@
             wire.style.opacity = '0.5';
             if (dragSound) {
                 dragSound.currentTime = 0;
-                dragSound.play().catch(() => {});
+                dragSound.play().catch(() => { });
             }
         });
 
@@ -736,7 +755,7 @@
             if (!isJacketStripped) {
                 if (errorSound) {
                     errorSound.currentTime = 0;
-                    errorSound.play().catch(() => {});
+                    errorSound.play().catch(() => { });
                 }
                 if (gameMessage) gameMessage.textContent = '⚠️ Step 1 Required: Click "STRIP OUTER JACKET ✂️" first!';
                 return;
@@ -768,13 +787,13 @@
         activeSlots[slotIndex] = wireId;
         playSparkSound();
 
-        // Check if placed wire matches the correct color code for this pin (3 pts each pin, 16 total = 48 pts max)
+        // Check if placed wire matches the correct color code for this pin (5 pts each pin, 16 total = 80 pts max)
         const isCorrectPin = (targetSeq[slotIndex] === wireId);
         const scoredSlots = (activePlug === 'A') ? scoredSlotsA : scoredSlotsB;
 
         if (isCorrectPin && !scoredSlots[slotIndex]) {
             scoredSlots[slotIndex] = true;
-            score += 3;
+            score += 5; // 5 pts per correct pin placement
             score = Math.min(100, Math.max(0, score));
             updateScoreDisplay();
         }
@@ -821,9 +840,10 @@
         scoredSlotsA = [false, false, false, false, false, false, false, false];
         scoredSlotsB = [false, false, false, false, false, false, false, false];
         score = 0;
+        bonusScore = 0;
         updateScoreDisplay();
-        timeLeft = 120;
-        
+        timeLeft = STAGE3_DURATION;
+
         // Reset Gold Teeth
         document.querySelectorAll('.gold-tooth-blade').forEach(blade => blade.classList.remove('crimped'));
 
@@ -871,7 +891,7 @@
         if (countA < 8) {
             if (errorSound) {
                 errorSound.currentTime = 0;
-                errorSound.play().catch(() => {});
+                errorSound.play().catch(() => { });
             }
             if (window.showInGameAlert) {
                 window.showInGameAlert('⚠️ INCOMPLETE CABLE', 'Please insert all 8 wire leads for PLUG END A first.', '🔌');
@@ -892,7 +912,7 @@
         if (countB < 8) {
             if (errorSound) {
                 errorSound.currentTime = 0;
-                errorSound.play().catch(() => {});
+                errorSound.play().catch(() => { });
             }
             if (window.showInGameAlert) {
                 window.showInGameAlert('⚠️ INCOMPLETE CABLE', 'Both ends of the cable must be wired.\nPlease switch to PLUG END B and insert all 8 wire leads before crimping.', '🔌');
@@ -1023,7 +1043,7 @@
 
         if (correctCountA === 8 && correctCountB === 8) {
             stopTimer(); // STOP TIMER: Tester completed with all 16 pins verified!
-            score += 12; // Bonus for full dual-end continuity pass (48 + 12 = 60 PTS)
+            score += 20; // Bonus for full dual-end continuity pass (80 + 20 = 100 PTS fixed practical score)
             score = Math.min(100, Math.max(0, score));
             updateScoreDisplay();
 
@@ -1032,7 +1052,7 @@
             testerStatusMsg.innerHTML = `
                 <div style="padding: 10px 0; display: flex; flex-direction: column; align-items: center; gap: 6px;">
                     <span style="font-family: 'Share Tech Mono', monospace; font-size: 0.85rem; color: #00ff88; letter-spacing: 1px;">
-                        16/16 PINS VERIFIED • CONTINUITY PASS ✅
+                        16/16 PINS VERIFIED • CONTINUITY PASS ✅ [PRACTICAL SCORE: 100/100 PTS]
                     </span>
                     <span style="font-family: 'Orbitron', sans-serif; font-size: 1.15rem; font-weight: 800; color: #00f5ff; text-shadow: 0 0 14px rgba(0, 245, 255, 0.7);">
                         LAUNCHING BONUS QUIZ...
@@ -1041,6 +1061,18 @@
             `;
 
             playBeep(587, 'sine', 0.15); // Subtle continuity confirmation ping
+
+            // Immediately persist practical score (100 PTS) upon 16/16 pin continuity verification
+            localStorage.setItem('stage3_completed', 'true');
+            localStorage.setItem('stage3_score', String(score));
+            const existingBonus = parseInt(localStorage.getItem('stage3_bonus_score')) || 0;
+            if (window.AuthEngine && typeof window.AuthEngine.logStageCompletion === 'function') {
+                try {
+                    window.AuthEngine.logStageCompletion(3, score, 'Testing Verified', existingBonus);
+                } catch (saveErr) {
+                    console.warn("AuthEngine practical completion log note:", saveErr);
+                }
+            }
 
             // POP UP THE QUIZ FIRST before displaying the total score!
             if (quizAutoLaunchTimer) clearTimeout(quizAutoLaunchTimer);
@@ -1053,7 +1085,7 @@
 
             if (errorSound) {
                 errorSound.currentTime = 0;
-                errorSound.play().catch(() => {});
+                errorSound.play().catch(() => { });
             }
 
             const mission = MISSIONS[currentMissionIdx];
@@ -1086,6 +1118,7 @@
         stopTimer(); // Ensure timer remains completely stopped while answering the quiz
         quizCurrentIdx = 0;
         quizScore = 0;
+        bonusScore = 0;
         if (bonusQuizModal) {
             bonusQuizModal.classList.add('active');
             loadBonusQuestions();
@@ -1168,7 +1201,7 @@
             quizProgressBadge.textContent = `QUESTION ${quizCurrentIdx + 1} / ${CSS_QUIZ_DATA.length}`;
         }
         if (quizPointsBadge) {
-            quizPointsBadge.textContent = `BONUS: +${quizScore * 8} PTS`;
+            quizPointsBadge.textContent = `BONUS: +${bonusScore} / 50 PTS`;
         }
         if (quizQNum) {
             quizQNum.textContent = `Q${quizCurrentIdx + 1}`;
@@ -1243,7 +1276,7 @@
         allBtns.forEach(b => b.disabled = false);
         if (errorSound) {
             errorSound.currentTime = 0;
-            errorSound.play().catch(() => {});
+            errorSound.play().catch(() => { });
         }
         if (insightTitle) insightTitle.textContent = "⚠️ CONNECTION PROBLEM";
         if (insightDesc) insightDesc.textContent = `${message} Please try selecting your answer again.`;
@@ -1255,11 +1288,9 @@
         if (isCorrect) {
             selectedBtn.classList.add('correct');
             quizScore++;
-            score += BONUS_POINTS_PER_QUESTION;
-            score = Math.min(100, Math.max(0, score));
-            updateScoreDisplay();
+            bonusScore = quizScore * BONUS_POINTS_PER_QUESTION; // Separate 0 to 50 PTS bonus
             if (quizPointsBadge) {
-                quizPointsBadge.textContent = `BONUS: +${quizScore * BONUS_POINTS_PER_QUESTION} PTS`;
+                quizPointsBadge.textContent = `BONUS: +${bonusScore} / 50 PTS`;
             }
             playBeep(659, 'triangle', 0.25);
             if (insightTitle) insightTitle.textContent = "CORRECT! CSS TECHNICIAN INSIGHT:";
@@ -1270,7 +1301,7 @@
             }
             if (errorSound) {
                 errorSound.currentTime = 0;
-                errorSound.play().catch(() => {});
+                errorSound.play().catch(() => { });
             }
             playBeep(220, 'sawtooth', 0.3);
             if (insightTitle) insightTitle.textContent = "INCORRECT! CSS TECHNICIAN INSIGHT:";
@@ -1281,6 +1312,20 @@
         }
         if (quizInsightBox) {
             quizInsightBox.style.display = 'block';
+        }
+
+        // Progressive save: persist earned bonus points immediately after each question
+        const currentPractical = Math.min(100, Math.max(0, score));
+        const currentBonus = Math.min(50, Math.max(0, bonusScore));
+        localStorage.setItem('stage3_completed', 'true');
+        localStorage.setItem('stage3_score', String(currentPractical));
+        localStorage.setItem('stage3_bonus_score', String(currentBonus));
+        if (window.AuthEngine && typeof window.AuthEngine.logStageCompletion === 'function') {
+            try {
+                window.AuthEngine.logStageCompletion(3, currentPractical, 'In Progress', currentBonus);
+            } catch (progErr) {
+                console.warn("AuthEngine progressive quiz save note:", progErr);
+            }
         }
 
         if (quizNextBtn) {
@@ -1317,15 +1362,20 @@
         // Grand victory sound played after the quiz is finished and total of whole score is revealed!
         if (successSound) {
             successSound.currentTime = 0;
-            successSound.play().catch(() => {});
+            successSound.play().catch(() => { });
         }
         playBeep(880, 'triangle', 0.5);
 
+        const finalPracticalScore = Math.min(100, Math.max(0, score));
+        const finalBonusScore = Math.min(50, Math.max(0, bonusScore));
+        const finalTotalStage3 = finalPracticalScore + finalBonusScore;
+
         localStorage.setItem('stage3_completed', 'true');
-        localStorage.setItem('stage3_score', String(score));
+        localStorage.setItem('stage3_score', String(finalPracticalScore));
+        localStorage.setItem('stage3_bonus_score', String(finalBonusScore));
         if (window.AuthEngine && typeof window.AuthEngine.logStageCompletion === 'function') {
             try {
-                window.AuthEngine.logStageCompletion(3, score, 'Completed');
+                window.AuthEngine.logStageCompletion(3, finalPracticalScore, 'Completed', finalBonusScore);
             } catch (authErr) {
                 console.error("AuthEngine stage completion log failed:", authErr);
             }
@@ -1344,31 +1394,31 @@
         const quizTotal = CSS_QUIZ_DATA.length;
         const quizSummaryText = quizUnavailable
             ? 'the bonus quiz was skipped (questions unavailable)'
-            : `scored ${quizScore}/${quizTotal} on the CSS network theory quiz`;
+            : `scored ${quizScore}/${quizTotal} on the CSS network theory quiz (+${finalBonusScore} bonus pts)`;
         const quizStatText = quizUnavailable
-            ? 'SKIPPED (+0 PTS)'
-            : `${quizScore}/${quizTotal} (+${quizScore * BONUS_POINTS_PER_QUESTION} PTS)`;
+            ? 'SKIPPED (+0 / 50 PTS)'
+            : `${quizScore}/${quizTotal} (+${finalBonusScore} / 50 PTS)`;
 
         if (quizBodyWrap) {
             quizBodyWrap.innerHTML = `
                 <div class="stage3-indicator-box indicator-victory">
                     <div class="indicator-icon-ring victory-ring">🎓</div>
-                    <div class="indicator-badge-pill victory-badge">CSS NC II NETWORK SPECIALIST • 100% PASS</div>
+                    <div class="indicator-badge-pill victory-badge">CSS NC II NETWORK SPECIALIST • COMPLETE</div>
                     <h2 class="indicator-title victory-title">STAGE 03 COMPLETED!</h2>
                     <p class="indicator-desc">Outstanding achievement! You terminated both Cat6 ends with 16/16 pin continuity and ${quizSummaryText}.</p>
                     
                     <div class="indicator-stats-grid">
                         <div class="stat-pill">
-                            <span class="stat-label">CONTINUITY</span>
-                            <span class="stat-val pass">16/16 PASS ✅</span>
+                            <span class="stat-label">CABLE FABRICATION</span>
+                            <span class="stat-val pass">${finalPracticalScore} / 100 PTS ✅</span>
                         </div>
                         <div class="stat-pill">
                             <span class="stat-label">BONUS QUIZ</span>
                             <span class="stat-val highlight">${quizStatText}</span>
                         </div>
                         <div class="stat-pill">
-                            <span class="stat-label">FINAL SCORE</span>
-                            <span class="stat-val highlight">${Math.min(100, score)} / 100 PTS</span>
+                            <span class="stat-label">STAGE 03 TOTAL</span>
+                            <span class="stat-val highlight" style="color:#00f5ff;">${finalTotalStage3} / 150 PTS ⭐</span>
                         </div>
                     </div>
 

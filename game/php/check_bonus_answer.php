@@ -29,7 +29,7 @@ if ($questionId < 1 || !in_array($selected, ['A', 'B', 'C', 'D'], true)) {
 }
 
 $stmt = $conn->prepare(
-    "SELECT correct_option, insight
+    "SELECT correct_option, insight, option_a, option_b, option_c, option_d
      FROM stage3_bonus_questions
      WHERE question_id = ? AND stage = ? AND is_active = 1
      LIMIT 1"
@@ -45,7 +45,7 @@ if (!$stmt) {
 $stage = BONUS_STAGE;
 $stmt->bind_param("ii", $questionId, $stage);
 $stmt->execute();
-$stmt->bind_result($correctOption, $insight);
+$stmt->bind_result($correctOption, $insight, $optA, $optB, $optC, $optD);
 $found = $stmt->fetch();
 $stmt->close();
 $conn->close();
@@ -56,7 +56,24 @@ if (!$found) {
     exit;
 }
 
-$correctLetter = strtoupper(trim((string)$correctOption));
+$rawCorrect    = trim((string)$correctOption);
+$correctLetter = strtoupper($rawCorrect);
+
+// Flexible extraction: handles 'A', 'a', 'A.', 'A)', '1', or matching option text
+if (preg_match('/^([A-D])\b/i', $rawCorrect, $m)) {
+    $correctLetter = strtoupper($m[1]);
+} elseif (in_array($rawCorrect, ['1', '2', '3', '4'], true)) {
+    $map = ['1' => 'A', '2' => 'B', '3' => 'C', '4' => 'D'];
+    $correctLetter = $map[$rawCorrect];
+} else {
+    $opts = [$optA, $optB, $optC, $optD];
+    foreach ($opts as $idx => $opt) {
+        if ($opt !== '' && (strcasecmp($rawCorrect, (string)$opt) === 0 || stripos((string)$opt, $rawCorrect) !== false)) {
+            $correctLetter = ['A', 'B', 'C', 'D'][$idx];
+            break;
+        }
+    }
+}
 
 if (!in_array($correctLetter, ['A', 'B', 'C', 'D'], true)) {
     error_log("check_bonus_answer: invalid correct_option for question_id {$questionId}");

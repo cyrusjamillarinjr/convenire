@@ -53,14 +53,30 @@ while ($row = $result->fetch_assoc()) {
         trim((string)$row['option_d'])
     ];
     $questionText  = trim((string)$row['question']);
-    $correctLetter = strtoupper(trim((string)$row['correct_option']));
+    $rawCorrect    = trim((string)$row['correct_option']);
+    $correctLetter = strtoupper($rawCorrect);
 
-    // Data integrity checks (teacher edits are free-form in MySQL-Front)
+    // Flexible extraction: handles 'A', 'a', 'A.', 'A)', '1', or matching option text
+    if (preg_match('/^([A-D])\b/i', $rawCorrect, $m)) {
+        $correctLetter = strtoupper($m[1]);
+    } elseif (in_array($rawCorrect, ['1', '2', '3', '4'], true)) {
+        $map = ['1' => 'A', '2' => 'B', '3' => 'C', '4' => 'D'];
+        $correctLetter = $map[$rawCorrect];
+    } else {
+        foreach ($options as $idx => $opt) {
+            if ($opt !== '' && (strcasecmp($rawCorrect, $opt) === 0 || stripos($opt, $rawCorrect) !== false)) {
+                $correctLetter = ['A', 'B', 'C', 'D'][$idx];
+                break;
+            }
+        }
+    }
+
+    // Data integrity checks (teacher edits are free-form in MySQL-Front/phpMyAdmin)
     if ($questionText === '' || in_array('', $options, true)) {
         $problems[] = "question_order {$order} has an empty question or option";
     }
     if (!in_array($correctLetter, ['A', 'B', 'C', 'D'], true)) {
-        $problems[] = "question_order {$order} has an invalid correct_option";
+        $problems[] = "question_order {$order} has an invalid correct_option ('{$rawCorrect}')";
     }
     if (isset($seenOrder[$order])) {
         $problems[] = "question_order {$order} is duplicated";

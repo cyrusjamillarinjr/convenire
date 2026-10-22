@@ -59,7 +59,7 @@ $stmt->bind_param("ssss", $studentId, $fullName, $section, $passwordHash);
 if ($stmt->execute()) {
     $newId = $stmt->insert_id;
     // Also insert initial student_records row so new student is immediately present on the leaderboard
-    $rec = $conn->prepare("INSERT INTO student_records (student_id, id_number, full_name, section, stage1_best_score, stage2_best_score, stage3_best_score, total_sessions) VALUES (?, ?, ?, ?, 0, 0, 0, 0) ON DUPLICATE KEY UPDATE full_name=VALUES(full_name)");
+    $rec = $conn->prepare("INSERT INTO student_records (student_id, id_number, full_name, section, stage1_best_score, stage2_best_score, stage3_best_score, stage3_bonus_score, total_sessions) VALUES (?, ?, ?, ?, 0, 0, 0, 0, 0) ON DUPLICATE KEY UPDATE full_name=VALUES(full_name)");
     if ($rec) {
         $rec->bind_param("isss", $newId, $studentId, $fullName, $section);
         $rec->execute();
